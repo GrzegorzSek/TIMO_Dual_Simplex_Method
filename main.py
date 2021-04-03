@@ -77,19 +77,20 @@ def variable_to_add(cols, a, row):
 
 
 def gaussian_elimination(a, row, col, rows, cols):
-    b = a
+    b = a.copy()
     for i in range(0, rows):  # wiersze
         for j in range(0, cols):  # kolumny
             if i == row and j == col:
                 a[i, j] = 1 / b[i, j]
-            elif i == row and j < col:
+            elif i == row and j != col:
                 a[i, j] = b[row, j] / b[row, col]
-            elif i < row and j == col:
+            elif i != row and j == col:
                 a[i, j] = -b[i, col] / b[row, col]
             else:
-                print(b)
-                # print(b[i, j], '-', b[i, col], '*', b[row, j], '/', b[row, col])
+                # print(b)
+                print(b[i, j], '- (', b[i, col], '*', b[row, j], '/', b[row, col], ')')
                 a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
+                # print(a[i, j])
     return a
 
 
