@@ -6,8 +6,12 @@ import numpy as np
 
 def main():
     a = np.array([[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])
+
+    a_goal = ['blank', 'x1', 'x2']
+    a_support = ['x0', 'x3', 'x4', 'x5']
     rows: int = a.shape[0]
     cols: int = a.shape[1]
+    print(rows, cols)
 
     is_a = is_acceptable(cols, a)
 
@@ -22,12 +26,41 @@ def main():
             col_of_variable_added_to_base = variable_to_add(cols, a, row_of_variable_removed_from_base)
             print('kolumna:' + str(col_of_variable_added_to_base))
             a = gaussian_elimination(a, row_of_variable_removed_from_base, col_of_variable_added_to_base, rows, cols)
+            swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
 
-            # is_b = is_optimal(rows, a)
-            is_b = True  # na czas testów jest True, żeby była tylko jedna iteracja
+            is_b = is_optimal(rows, a)
+            # is_b = True  # na czas testów jest True, żeby była tylko jedna iteracja
+            # print(a)
+
+        print(a)
+        print("f celu: ")
+        print(a_goal)
+        print("pomocnicze: ")
+        print(a_support)
+        print()
+
+        # po rozwiązaniu sprawdzamy czy ma zero w funckji celu i wykonujemy odpowiednie akcje
+        has_inf_solutions = is_multiple_solutions(a, cols)
+        if has_inf_solutions:
+            col_no = col_to_opt(a, cols)
+            row_no = row_to_simplex(a, rows, col_no)
+            a = gaussian_elimination(a, row_no, col_no, rows, cols)
+            swap_x(a_goal, a_support, row_no, col_no)
             print(a)
+            print()
+            print("f celu: ")
+            print(a_goal)
+            print("pomocnicze: ")
+            print(a_support)
+
     else:
         print('Rozwiązanie nie jest dualnie dopuszczalne')
+
+
+def swap_x(goal, support, row, col):
+    temp = goal[col]
+    goal[col] = support[row]
+    support[row] = temp
 
 
 def is_acceptable(cols, a):  # test dualnej dopuszczalności zaczyna się od wiersza zerowego
@@ -38,18 +71,52 @@ def is_acceptable(cols, a):  # test dualnej dopuszczalności zaczyna się od wie
 
 
 def is_optimal(rows, a):  # test optymalności zaczyna się od wiersza 1 nie od zerowego
-    for i in range(rows):
+    for i in range(1, rows):
         if a[i, 0] < 0:
             return False
     return True
+
+
+def is_multiple_solutions(a, cols):  # sprawdzamy czy f. celu ma zero
+    for i in range(1, cols):
+        if a[0, i] == 0:
+            return True
+
+
+def col_to_opt(a, cols):  # bierzemy kolumnę dla której jest zero
+    for i in range(1, cols):
+        if a[0, i] == 0:
+            return i
+
+
+def row_to_simplex(a, rows, col):  # szukamy dla jakie zmienne musimy ze sobą zamienić dla wielu rozw.
+    x = 0
+    x_i = 0
+    row_output = 0
+
+    for i in range(1, rows):
+        if a[i, 0] / a[i, col] >= 0:
+            x = a[i, 0] / a[i, col]
+            row_output = i
+            x_i = i + 1
+
+    if x_i <= rows:
+        for j in range(x_i, rows):
+            if a[j, 0] / a[j, col] >= 0:
+                y = a[j, 0] / a[j, col]
+                if y < x:
+                    x = a[j, 0] / a[j, col]
+                    row_output = j
+
+    return row_output
 
 
 def variable_to_remove(rows, a):
     x = a[1, 0]
     row = 1
     for i in range(1, rows - 1):
-        if x > a[i+1, 0]:
-            x = a[i+1, 0]
+        if x > a[i + 1, 0]:
+            x = a[i + 1, 0]
             row += 1
     # print(x)
     return row
@@ -69,8 +136,8 @@ def variable_to_add(cols, a, row):
             break
 
     for i in range(new_starting_point, cols - 1):
-        if a[row, i + 1] < 0 and a[0, i] / a[row, i+1] > x:
-            x = a[0, i] / a[row, i+1]
+        if a[row, i + 1] < 0 and a[0, i] / a[row, i + 1] > x:
+            x = a[0, i] / a[row, i + 1]
             col += 1
     # print(col)
     return col
@@ -88,7 +155,7 @@ def gaussian_elimination(a, row, col, rows, cols):
                 a[i, j] = -b[i, col] / b[row, col]
             else:
                 # print(b)
-                print(b[i, j], '- (', b[i, col], '*', b[row, j], '/', b[row, col], ')')
+                # print(b[i, j], '- (', b[i, col], '*', b[row, j], '/', b[row, col], ')')
                 a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
                 # print(a[i, j])
     return a
