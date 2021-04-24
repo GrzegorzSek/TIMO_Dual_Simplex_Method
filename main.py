@@ -7,8 +7,10 @@ import numpy as np
 def main():
     a = np.array([[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])
 
-    a_goal = ['blank', 'x1', 'x2']
-    a_support = ['x0', 'x3', 'x4', 'x5']
+    a_dict = {}
+    a_dict2 = {}
+    a_goal = [0, 1, 2]
+    a_support = [0, 3, 4, 5]
     rows: int = a.shape[0]
     cols: int = a.shape[1]
     print(rows, cols)
@@ -32,11 +34,25 @@ def main():
             # is_b = True  # na czas testów jest True, żeby była tylko jedna iteracja
             # print(a)
 
+        print("macierz wyników")
         print(a)
+        print()
+
+        print("tabele pomocnicze")
         print("f celu: ")
         print(a_goal)
-        print("pomocnicze: ")
+        print("zm pomocnicze: ")
         print(a_support)
+        print()
+
+        print("wynik jako dictionary")
+        answer_dict(a, a_goal, a_support, a_dict)
+        print(a_dict)
+
+        print("wynik jako wektor")
+        ans1 = []
+        answer_array(a_dict, ans1)
+        print(ans1)
         print()
 
         # po rozwiązaniu sprawdzamy czy ma zero w funckji celu i wykonujemy odpowiednie akcje
@@ -46,15 +62,43 @@ def main():
             row_no = row_to_simplex(a, rows, col_no)
             a = gaussian_elimination(a, row_no, col_no, rows, cols)
             swap_x(a_goal, a_support, row_no, col_no)
+
+            print("macierz wyników")
             print(a)
             print()
+
+            print("tabele pomocnicze")
             print("f celu: ")
             print(a_goal)
-            print("pomocnicze: ")
+            print("zm pomocnicze: ")
             print(a_support)
+            print()
+
+            print("wynik jako dictionary")
+            answer_dict(a, a_goal, a_support, a_dict2)
+            print(a_dict2)
+
+            print("wynik jako wektor")
+            ans2 = []
+            answer_array(a_dict2, ans2)
+            print(ans2)
+            print()
 
     else:
         print('Rozwiązanie nie jest dualnie dopuszczalne')
+
+
+def answer_dict(a, a_goal, a_support, a_dict):
+    for i in range(1, len(a_goal)):
+        a_dict[a_goal[i]] = a[0, i]
+
+    for j in range(1, len(a_support)):
+        a_dict[a_support[j]] = a[j, 0]
+
+
+def answer_array(a_dict, ans):
+    for i in range(1, len(a_dict)+1):
+        ans.append(a_dict.get(i))
 
 
 def swap_x(goal, support, row, col):
