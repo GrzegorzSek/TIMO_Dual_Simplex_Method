@@ -7,7 +7,8 @@ import numpy as np
 
 
 def main():
-    a = np.array([[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])
+    a = np.array([[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]]) # wiele rozwiązań na zbiorze ograniczonym
+    # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
 
     a_dict = {}
     a_dict2 = {}
@@ -16,6 +17,7 @@ def main():
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
+    step_counter = 1
 
     is_a = is_acceptable(cols, a)
 
@@ -24,16 +26,17 @@ def main():
         is_b = is_optimal(rows, a)
 
         while not is_b:
+            print('KROK: ' + str(step_counter))
             print('Rozwiązanie jest nieoptymalne')
             row_of_variable_removed_from_base = variable_to_remove(rows, a)  # wiersz zmiennej do usunięcia
-            print('wiersz:' + str(row_of_variable_removed_from_base))
+            # print('wiersz:' + str(row_of_variable_removed_from_base))
             col_of_variable_added_to_base = variable_to_add(cols, a, row_of_variable_removed_from_base)
-            print('kolumna:' + str(col_of_variable_added_to_base))
+            # print('kolumna:' + str(col_of_variable_added_to_base))
             a = gaussian_elimination(a, row_of_variable_removed_from_base, col_of_variable_added_to_base, rows, cols)
             swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
 
             is_b = is_optimal(rows, a)
-            # is_b = True  # na czas testów jest True, żeby była tylko jedna iteracja
+            step_counter += 1
             # print(a)
 
         print("macierz wyników")
@@ -92,6 +95,32 @@ def main():
             on_unlimited_set = is_on_unlimited_set(a, rows, cols)
             if on_limited_set != 0:
                 print('Zadanie posiada wiele rozwiązań na zbiorze ograniczonym')
+                print()
+                col_no = col_to_opt(a, cols)
+                row_no = row_to_simplex(a, rows, col_no)
+                a = gaussian_elimination(a, row_no, col_no, rows, cols)
+                swap_x(a_goal, a_support, row_no, col_no)
+
+                print("macierz wyników")
+                print(a)
+                print()
+
+                print("tabele pomocnicze")
+                print("f celu: ")
+                print(a_goal)
+                print("zm pomocnicze: ")
+                print(a_support)
+                print()
+
+                print("wynik jako dictionary")
+                answer_dict(a, a_goal, a_support, a_dict2)
+                print(a_dict2)
+
+                print("wynik jako wektor")
+                ans2 = []
+                answer_array(a_dict2, ans2)
+                print(ans2)
+                print()
             elif on_unlimited_set != 0:
                 print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
             else:
@@ -205,13 +234,13 @@ def is_optimal(rows, a):  # test optymalności zaczyna się od wiersza 1 nie od 
 #             return True
 
 
-def col_to_opt(a, cols):  # bierzemy kolumnę dla której jest zero
+def col_to_opt(a, cols):  # bierzemy kolumnę dla której jest w pierwszym wierszu jest zero
     for j in range(1, cols):
         if a[0, j] == 0:
             return j
 
 
-def row_to_simplex(a, rows, col):  # szukamy dla jakie zmienne musimy ze sobą zamienić dla wielu rozw.
+def row_to_simplex(a, rows, col):  # szukamy jakie zmienne musimy ze sobą zamienić dla wielu rozw.
     x = 0
     x_i = 0
     row_output = 0
