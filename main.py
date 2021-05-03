@@ -2,6 +2,10 @@
 # max to gradient
 # minimum to gradient * (-1)
 
+# CZEGO BRAKUJE?
+# wyświetlanie wyniku dla półprostej
+# ujednolicić printy, żeby było ładnie
+
 # Imports
 import numpy as np
 from prettytable import PrettyTable
