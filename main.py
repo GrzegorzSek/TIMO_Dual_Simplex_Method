@@ -12,16 +12,17 @@ from prettytable import PrettyTable
 
 
 def main():
-    a = np.array(
-        [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
+    # a = np.array(
+    #     [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
+    a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele rozwiązań na zbiorze nieograniczonym
 
     dim = 2     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
     a_goal = [0, 1, 2]
-    a_support = [0, 3, 4, 5]  # zmienne pomocnicze
+    a_support = [0, 3, 4]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -133,6 +134,7 @@ def main():
                 print_bounded_solution(bounded_solution)
             elif on_unlimited_set != 0:
                 print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
+                # print_unbounded_solution(a, rows, cols, a_dict2)
             else:
                 print('Zadanie posiada tylko jedno rozwiązanie')
         else:
@@ -144,6 +146,9 @@ def main():
 
     else:
         print('Rozwiązanie nie jest dualnie dopuszczalne')
+
+
+# def print_unbounded_solution(a, rows, cols, a_dict2):
 
 
 def print_bounded_solution(bounded_solution):
