@@ -25,7 +25,7 @@ def bind(objectName, propertyName, type):
 class Ui_MainWindow(object):
     iloscZm = 0
     iloscOgr = 0
-    macierz = [0]
+    macierz = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -422,9 +422,30 @@ class Ui_MainWindow(object):
                     element.setEnabled(False)  # self.aktywneZm[y].setEnabled(False)
 
     def utworzMacierz(self):
+        iloscCelu = int(self.iloscZm)
+        iloscOgraniczen = int(self.iloscOgr)
+
+        tempZmienne = [0]
+        tempOgraniczenia = [[0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0]]
         for i in range(self.iloscZm):
-            self.macierz.append(int(self.aktywneZm[i].text()))
-        self.textBrowser.append(str(self.macierz))
+            tempZmienne.append(int(self.aktywneZm[i].text()))
+        self.textBrowser.append(str(tempZmienne))
+
+        for i in range(iloscOgraniczen):
+            for j in range(iloscCelu):
+                if self.aktywneOgr[i][j].text(): # jezeli nie jest puste
+                    tempOgraniczenia[i][j] = int(self.aktywneOgr[i][j].text())
+        for i in range(iloscOgraniczen):
+            if self.aktywneOgr[i][5].text():  # jezeli nie jest puste
+                tempOgraniczenia[i][5] = int(self.aktywneOgr[i][5].text())
+
+
+        print(tempOgraniczenia)
+        # self.textBrowser.append(str(tempMacierz))
 
 
 # start programu
