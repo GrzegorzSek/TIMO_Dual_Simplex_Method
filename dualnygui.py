@@ -363,8 +363,8 @@ class Ui_MainWindow(object):
         self.comboOgr.setItemText(4, _translate("MainWindow", "4"))
         self.comboOgr.setItemText(5, _translate("MainWindow", "5"))
 
-        self.labelZmienne.setText(_translate("MainWindow", "Ilość zmiennych"))
-        self.labelLiczbaOgr.setText(_translate("MainWindow", "Ilość ograniczeń"))
+        self.labelZmienne.setText(_translate("MainWindow", "L. zmiennych"))
+        self.labelLiczbaOgr.setText(_translate("MainWindow", "L. ograniczeń"))
         self.buttonStart.setText(_translate("MainWindow", "Start"))
         self.labelMin.setText(_translate("MainWindow", "min x0 ="))
         self.labelOgr.setText(_translate("MainWindow", "Ograniczenia"))
@@ -427,23 +427,36 @@ class Ui_MainWindow(object):
 
         tempZmienne = [0]
         tempOgraniczenia = [[0, 0, 0, 0, 0, 0],
-                       [0, 0, 0, 0, 0, 0],
-                       [0, 0, 0, 0, 0, 0],
-                       [0, 0, 0, 0, 0, 0],
-                       [0, 0, 0, 0, 0, 0]]
+                            [0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0]]
         for i in range(self.iloscZm):
             tempZmienne.append(int(self.aktywneZm[i].text()))
         self.textBrowser.append(str(tempZmienne))
-
+        # tworzenie temp macierzy
         for i in range(iloscOgraniczen):
             for j in range(iloscCelu):
-                if self.aktywneOgr[i][j].text(): # jezeli nie jest puste
+                if self.aktywneOgr[i][j].text():  # jezeli nie jest puste
                     tempOgraniczenia[i][j] = int(self.aktywneOgr[i][j].text())
         for i in range(iloscOgraniczen):
             if self.aktywneOgr[i][5].text():  # jezeli nie jest puste
                 tempOgraniczenia[i][5] = int(self.aktywneOgr[i][5].text())
 
+        # wpisywanie elementów do macierzy simplex
+        for i in range(iloscOgraniczen):
+            self.macierz.append([])
 
+        for i in range(iloscOgraniczen):
+            self.macierz[i].append(-1*tempOgraniczenia[i][-1])
+
+        for i in range(iloscOgraniczen):
+            for j in range(iloscCelu):
+                self.macierz[i].append(-1*tempOgraniczenia[i][j])
+
+        self.macierz.insert(0, tempZmienne)
+
+        print(self.macierz)
         print(tempOgraniczenia)
         # self.textBrowser.append(str(tempMacierz))
 
