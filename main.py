@@ -5,6 +5,7 @@
 # CZEGO BRAKUJE?
 # wyświetlanie wyniku dla półprostej
 # ujednolicić printy, żeby było ładnie
+# sd
 
 # Imports
 import numpy as np
