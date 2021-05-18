@@ -16,7 +16,9 @@ def main():
     #     [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
-    a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]]) # wiele na nieogr
+    # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
+    a = np.array([[0., 0., 1.], [-4., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+
 
     print(a)
 
@@ -25,7 +27,7 @@ def main():
     a_dict2 = {}
     a_dict3 = {}
     a_goal = [0, 1, 2]
-    a_support = [0, 3, 4, 5]  # zmienne pomocnicze
+    a_support = [0, 3, 4]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -37,6 +39,7 @@ def main():
     if is_a:
         print('Rozwiązanie jest dualnie dopuszcalne')
         is_b = is_optimal(rows, a)
+        print(a)
 
         while not is_b:
             print('KROK: ' + str(step_counter))
