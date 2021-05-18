@@ -79,26 +79,26 @@ def main():
             print(ans3)
             print()
 
-        # print("macierz wyników")
-        # print(a)
-        # print()
-        #
-        # print("tabele pomocnicze")
-        # print("f celu: ")
-        # print(a_goal)
-        # print("zm pomocnicze: ")
-        # print(a_support)
-        # print()
-        #
-        # print("wynik jako dictionary")
-        # answer_dict(a, a_goal, a_support, a_dict)
-        # print(a_dict)
-        #
-        # print("wynik jako wektor")
-        # ans1 = []
-        # answer_array(a_dict, ans1)
-        # print(ans1)
-        # print()
+        print("macierz wyników")
+        print(a)
+        print()
+
+        print("tabele pomocnicze")
+        print("f celu: ")
+        print(a_goal)
+        print("zm pomocnicze: ")
+        print(a_support)
+        print()
+
+        print("wynik jako dictionary")
+        answer_dict(a, a_goal, a_support, a_dict)
+        print(a_dict)
+
+        print("wynik jako wektor")
+        ans1 = []
+        answer_array(a_dict, ans1)
+        print(ans1)
+        print()
 
         i_s_c = inf_solutions_condition(a, cols)
         if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań?
