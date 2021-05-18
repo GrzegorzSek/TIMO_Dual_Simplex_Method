@@ -18,8 +18,7 @@ def main():
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
-    a = np.array([[0., 0., 1.], [-4., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
-
+    a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
 
     print(a)
 
@@ -40,7 +39,6 @@ def main():
     if is_a:
         print('Rozwiązanie jest dualnie dopuszcalne')
         is_b = is_optimal(rows, a)
-        print(a)
 
         while not is_b:
             print('KROK: ' + str(step_counter))
@@ -81,26 +79,26 @@ def main():
             print(ans3)
             print()
 
-        print("macierz wyników")
-        print(a)
-        print()
-
-        print("tabele pomocnicze")
-        print("f celu: ")
-        print(a_goal)
-        print("zm pomocnicze: ")
-        print(a_support)
-        print()
-
-        print("wynik jako dictionary")
-        answer_dict(a, a_goal, a_support, a_dict)
-        print(a_dict)
-
-        print("wynik jako wektor")
-        ans1 = []
-        answer_array(a_dict, ans1)
-        print(ans1)
-        print()
+        # print("macierz wyników")
+        # print(a)
+        # print()
+        #
+        # print("tabele pomocnicze")
+        # print("f celu: ")
+        # print(a_goal)
+        # print("zm pomocnicze: ")
+        # print(a_support)
+        # print()
+        #
+        # print("wynik jako dictionary")
+        # answer_dict(a, a_goal, a_support, a_dict)
+        # print(a_dict)
+        #
+        # print("wynik jako wektor")
+        # ans1 = []
+        # answer_array(a_dict, ans1)
+        # print(ans1)
+        # print()
 
         i_s_c = inf_solutions_condition(a, cols)
         if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań?
@@ -359,6 +357,7 @@ def variable_to_add(cols, a, row):
             new_starting_point += 1
             print('Nowy punkt startowy to: ')
             print(new_starting_point)
+            col = new_starting_point
             break
         else:
             new_starting_point += 1
