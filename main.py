@@ -15,14 +15,17 @@ def main():
     # a = np.array(
     #     [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
-    a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele rozwiązań na zbiorze nieograniczonym
+    # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
+    a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]]) # wiele na nieogr
+
+    print(a)
 
     dim = 2     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
     a_goal = [0, 1, 2]
-    a_support = [0, 3, 4]  # zmienne pomocnicze
+    a_support = [0, 3, 4, 5]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -49,8 +52,12 @@ def main():
             step_counter += 1
 
             print("macierz wyników")
-            # print(a)
-            print_solution(a, rows, cols, a_goal, a_support)
+            print(a)
+            print('goal:')
+            print(a_goal)
+            print('support')
+            print(a_support)
+            # print_solution(a, rows, cols, a_goal, a_support)
             print()
 
             print("tabele pomocnicze")
@@ -108,6 +115,7 @@ def main():
                     a = gaussian_elimination(a, row_no, col_no, rows, cols)
                     swap_x(a_goal, a_support, row_no, col_no)
 
+                    print(a)
                     # print("macierz wyników")
                     # print(a)
                     # print()
@@ -175,16 +183,22 @@ def inf_solutions_condition(a, cols):  # sprawdza czy zadanie spełnia warunki n
     for j in range(1, cols):  # jest to warunek y_0 j >= 0
         if a[0, j] < 0:
             return False
-        return True
+    print('zadanie może mieć nieskonczenie wiele rozwiazan')
+    return True
 
 
 def is_on_limited_set(a, rows, cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
     col = 0
-    for j in range(1, cols):  # sprawdza czy w wierszu występuje zero - warunek: y_0 j_0 = 0
+    print('sprawdamy ograniczone zadanie')
+    print(a)
+    for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
         if a[0, j] == 0:
             col = j
-        else:
-            return col
+            print('Jest 0 w pierwszym wierszu')
+
+    if col == 0:
+        print('nie ma 0 w pierwszym wierszu')
+        return col
 
     for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
         if a[i, 0] > 0:
@@ -260,6 +274,7 @@ def is_optimal(rows, a):  # test optymalności zaczyna się od wiersza 1 nie od 
     for i in range(1, rows):
         if a[i, 0] < 0:
             return False
+    print('rozwiązanie optymalne')
     return True
 
 
@@ -297,13 +312,30 @@ def row_to_simplex(a, rows, col):  # szukamy jakie zmienne musimy ze sobą zamie
     return row_output
 
 
-def variable_to_remove(rows, a):
-    x = a[1, 0]
+def variable_to_remove(rows, a):    # usuwamy wiersz, który min < 0
+    # x = a[1, 0]
+    # row = 1
+    # for i in range(1, rows - 1):
+    #     if x > a[i + 1, 0]:
+    #         x = a[i + 1, 0]
+    #         row += 1
     row = 1
-    for i in range(1, rows - 1):
-        if x > a[i + 1, 0]:
+    x = 0
+    new_starting_point = 0
+    for i in range(1, rows):    # bierze pierwszy element z 0 kolumny < 0
+        if a[i, 0] < 0:
+            x = a[i, 0]
+            new_starting_point += 1
+            row = new_starting_point
+            break
+        else:
+            new_starting_point += 1
+
+    for i in range(new_starting_point, rows - 1):
+        if a[i + 1, 0] < 0 and a[i + 1, 0] < x:
             x = a[i + 1, 0]
-            row += 1
+            row = i + 1
+
     print('Usuwamy wiersz: ' + str(row))
     print(x)
     return row
@@ -313,22 +345,27 @@ def variable_to_add(cols, a, row):
     new_starting_point = 0
     x = 0
     col = 1
+    temp = 0
 
     for j in range(1, cols):  # tutaj bierze pierwszą napotkaną wartość y_0j/y_rj < 0
         if a[row, j] < 0:
             x = a[0, 1] / a[row, j]
+            temp = a[row, j]
             # print(x)
             new_starting_point += 1
             print('Nowy punkt startowy to: ')
             print(new_starting_point)
             break
+        else:
+            new_starting_point += 1
 
     for j in range(new_starting_point, cols - 1):
         if a[row, j + 1] < 0 and a[0, j] / a[row, j + 1] > x:
+            temp = a[row, j + 1]
             x = a[0, j] / a[row, j + 1]
-            col += 1
+            col = j + 1
     print('Dodajemy kolumnę: ' + str(col))
-    print(x)
+    print(temp)
     return col
 
 
