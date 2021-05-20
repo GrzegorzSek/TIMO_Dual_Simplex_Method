@@ -18,16 +18,16 @@ def main():
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
-    a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
-
+    # a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+    a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])
     print(a)
 
-    dim = 2     # wymiar zadania
+    dim = 3     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
-    a_goal = [0, 1, 2]
-    a_support = [0, 3, 4]  # zmienne pomocnicze
+    a_goal = [0, 1, 2, 3]
+    a_support = [0, 4, 5]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -59,7 +59,7 @@ def main():
             print(a_goal)
             print('support')
             print(a_support)
-            # print_solution(a, rows, cols, a_goal, a_support)
+            print_solution(a, rows, cols, a_goal, a_support)
             print()
 
             print("tabele pomocnicze")
@@ -177,7 +177,7 @@ def print_solution(a, rows, cols, a_goal, a_support):
     s = PrettyTable(['X', str(a_goal)])
 
     for i in range(0, rows):
-        s.add_row([str(a_support[i]), a[0]])
+        s.add_row([str(a_support[i]), a[i]])
     print(s)
 
 
@@ -363,7 +363,7 @@ def variable_to_add(cols, a, row):
             new_starting_point += 1
 
     for j in range(new_starting_point, cols - 1):
-        if a[row, j + 1] < 0 and a[0, j] / a[row, j + 1] > x:
+        if a[row, j + 1] < 0 and a[0, j + 1] / a[row, j + 1] > x:
             temp = a[row, j + 1]
             x = a[0, j] / a[row, j + 1]
             col = j + 1
