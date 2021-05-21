@@ -18,16 +18,17 @@ def main():
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
-    # a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
-    a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])
+    a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+    # a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])  # Jedno rozwiązanie dla 3 wymiarów
+    # a = np.array([[1., 2., 3., 4., 5., 6.], [-1., -2., -3., -4., -5., -6.], [-4., -3., -2., -1., 1., 5.]])
     print(a)
 
     dim = 3     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
-    a_goal = [0, 1, 2, 3]
-    a_support = [0, 4, 5]  # zmienne pomocnicze
+    a_goal = [0, 1, 2]  # f celu
+    a_support = [0, 3, 4]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -144,7 +145,7 @@ def main():
                 print_bounded_solution(bounded_solution)
             elif on_unlimited_set != 0:
                 print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
-                # print_unbounded_solution(a, rows, cols, a_dict2)
+                print_unbounded_solution(a, a_support, a_goal, dim)
             else:
                 print('Zadanie posiada tylko jedno rozwiązanie')
         else:
@@ -158,7 +159,31 @@ def main():
         print('Rozwiązanie nie jest dualnie dopuszczalne')
 
 
-# def print_unbounded_solution(a, rows, cols, a_dict2):
+def print_unbounded_solution(a, a_support, a_goal, dim):
+    b = a.copy()
+    a_support.insert(0, 0)
+    b = np.row_stack([a_goal, b])
+    b = np.column_stack([a_support, b])
+
+    rows = b.shape[0]
+    cols = b.shape[1]
+    col = 0
+    solution = []
+    for j in range(2, cols):
+        if b[1, j] == 0:
+            col = j
+            # print(j)
+            break
+
+    for i in range(1, dim):     # pętla po x1, x2, ...
+        for w in range(2, rows):    # pętla po wierszach
+            if i == b[w, 0]:
+                # print(b[w, col])
+                solution.append(b[w, col])
+                break
+
+    print('Rozwiązanie: ')
+    print('x + ' + str(solution) + 't')
 
 
 def print_bounded_solution(bounded_solution):
@@ -247,11 +272,11 @@ def is_on_unlimited_task(a, rows, cols):  # sprawdza czy zadanie jest nieogranic
 
 
 def answer_dict(a, a_goal, a_support, a_dict):
-    for i in range(1, len(a_goal)):
-        a_dict[a_goal[i]] = a[0, i]
+    for j in range(1, len(a_goal)):
+        a_dict[a_goal[j]] = a[0, j]
 
-    for j in range(1, len(a_support)):
-        a_dict[a_support[j]] = a[j, 0]
+    for i in range(1, len(a_support)):
+        a_dict[a_support[i]] = a[i, 0]
 
 
 def answer_array(a_dict, ans):
