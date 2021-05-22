@@ -652,7 +652,7 @@ class Ui_MainWindow(object):
         for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
             if a[0][j] == 0:
                 col = j
-                print('Jest 0 w pierwszym wierszu')
+                print('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
 
         if col == 0:
             print('nie ma 0 w pierwszym wierszu')
@@ -660,13 +660,12 @@ class Ui_MainWindow(object):
 
         for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
             if a[i][0] > 0:
+                print('a[' + str(i) + ', 0] > 0')
                 if a[i][col] > 0:
+                    print('a[' + str(i) + ', ' + str(col) + '] > 0')
                     return col
-                else:
-                    col = 0
-            else:
-                col = 0
-        return col
+
+        return 0
 
     def is_on_unlimited_set(self, a, rows, cols):  # spradza czy zadanie ma wiele rozw. na zb. nieogr.
         row = 0  # zmienna licząca wiersze z degeneracją
