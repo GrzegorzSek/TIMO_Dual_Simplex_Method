@@ -14,21 +14,21 @@ from prettytable import PrettyTable
 
 def main():
     # a = np.array(
-    #     [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
+        # [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
-    a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
-    # a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])  # Jedno rozwiązanie dla 3 wymiarów
+    # a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+    a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])  # Jedno rozwiązanie dla 3 wymiarów
     # a = np.array([[1., 2., 3., 4., 5., 6.], [-1., -2., -3., -4., -5., -6.], [-4., -3., -2., -1., 1., 5.]])
     print(a)
 
-    dim = 3     # wymiar zadania
+    dim = 4     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
-    a_goal = [0, 1, 2]  # f celu
-    a_support = [0, 3, 4]  # zmienne pomocnicze
+    a_goal = [0, 1, 2, 3]  # f celu
+    a_support = [0, 4, 5]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -60,7 +60,7 @@ def main():
             print(a_goal)
             print('support')
             print(a_support)
-            print_solution(a, rows, cols, a_goal, a_support)
+            # print_solution(a, rows, cols, a_goal, a_support)
             print()
 
             print("tabele pomocnicze")
@@ -110,7 +110,7 @@ def main():
                 print(a_dict)
                 bounded_solution[0, 0] = a_dict[1]
                 bounded_solution[0, 1] = a_dict[2]
-                for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
+                for d in range(1, cols - 1):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
                     print('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
                     print()
                     col_no = col_to_opt(a, cols)
@@ -188,6 +188,8 @@ def print_unbounded_solution(a, a_support, a_goal, dim):
 
 def print_bounded_solution(bounded_solution):
     dim = bounded_solution.shape[0]
+    print('to jest bounded')
+    print(bounded_solution)
     print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
     for d in range(0, dim):
         if d < dim - 1:
@@ -221,7 +223,7 @@ def is_on_limited_set(a, rows, cols):  # sprawdza czy zadanie posiada nieskończ
     for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
         if a[0, j] == 0:
             col = j
-            print('Jest 0 w pierwszym wierszu')
+            print('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
 
     if col == 0:
         print('nie ma 0 w pierwszym wierszu')
@@ -229,13 +231,12 @@ def is_on_limited_set(a, rows, cols):  # sprawdza czy zadanie posiada nieskończ
 
     for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
         if a[i, 0] > 0:
+            print('a[' + str(i) + ', 0] > 0')
             if a[i, col] > 0:
+                print('a[' + str(i) + ', ' + str(col) + '] > 0')
                 return col
-            else:
-                col = 0
-        else:
-            col = 0
-    return col
+
+    return 0
 
 
 def is_on_unlimited_set(a, rows, cols):  # spradza czy zadanie ma wiele rozw. na zb. nieogr.
