@@ -1,10 +1,9 @@
 # Dual Simplex Method
-# max to gradient
-# minimum to gradient * (-1)
 
 # CZEGO BRAKUJE?
 # wyświetlanie wyniku dla półprostej
 # ujednolicić printy, żeby było ładnie
+# sd
 
 # Imports
 import numpy as np
@@ -12,17 +11,22 @@ from prettytable import PrettyTable
 
 
 def main():
-    # a = np.array([[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])
-    # wiele rozwiązań na zbiorze ograniczonym
-    a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
-    # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele rozwiązań na zbiorze nieograniczonym
+    # a = np.array(
+    #     [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
+    # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
+    # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
+    a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
+    # a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+    # a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])  # Jedno rozwiązanie dla 3 wymiarów
+    # a = np.array([[1., 2., 3., 4., 5., 6.], [-1., -2., -3., -4., -5., -6.], [-4., -3., -2., -1., 1., 5.]])
+    print(a)
 
-    dim = 2     # wymiar zadania
+    dim = 3     # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
-    a_goal = [0, 1, 2]
-    a_support = [0, 3, 4]  # zmienne pomocnicze
+    a_goal = [0, 1, 2]  # f celu
+    a_support = [0, 3, 4, 5]  # zmienne pomocnicze
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
@@ -49,7 +53,11 @@ def main():
             step_counter += 1
 
             print("macierz wyników")
-            # print(a)
+            print(a)
+            print('goal:')
+            print(a_goal)
+            print('support')
+            print(a_support)
             print_solution(a, rows, cols, a_goal, a_support)
             print()
 
@@ -108,17 +116,7 @@ def main():
                     a = gaussian_elimination(a, row_no, col_no, rows, cols)
                     swap_x(a_goal, a_support, row_no, col_no)
 
-                    # print("macierz wyników")
-                    # print(a)
-                    # print()
-                    #
-                    # print("tabele pomocnicze")
-                    # print("f celu: ")
-                    # print(a_goal)
-                    # print("zm pomocnicze: ")
-                    # print(a_support)
-                    # print()
-                    #
+                    print(a)
                     print("wynik jako dictionary")
                     answer_dict(a, a_goal, a_support, a_dict2)
                     print(a_dict2)
@@ -134,7 +132,7 @@ def main():
                 print_bounded_solution(bounded_solution)
             elif on_unlimited_set != 0:
                 print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
-                # print_unbounded_solution(a, rows, cols, a_dict2)
+                print_unbounded_solution(a, a_support, a_goal, dim)
             else:
                 print('Zadanie posiada tylko jedno rozwiązanie')
         else:
@@ -148,7 +146,30 @@ def main():
         print('Rozwiązanie nie jest dualnie dopuszczalne')
 
 
-# def print_unbounded_solution(a, rows, cols, a_dict2):
+def print_unbounded_solution(a, a_support, a_goal, dim):
+    b = a.copy()
+    a_support.insert(0, 0)
+    b = np.row_stack([a_goal, b])
+    b = np.column_stack([a_support, b])
+
+    rows = b.shape[0]
+    cols = b.shape[1]
+    col = 0
+    solution = []
+    for j in range(2, cols):
+        if b[1, j] == 0:
+            col = j
+            break
+
+    for i in range(1, dim):     # pętla po x1, x2, ...
+        for w in range(2, rows):    # pętla po wierszach
+            if i == b[w, 0]:
+                # print(b[w, col])
+                solution.append(b[w, col])
+                break
+
+    print('Rozwiązanie: ')
+    print('x + ' + str(solution) + 't')
 
 
 def print_bounded_solution(bounded_solution):
@@ -167,7 +188,7 @@ def print_solution(a, rows, cols, a_goal, a_support):
     s = PrettyTable(['X', str(a_goal)])
 
     for i in range(0, rows):
-        s.add_row([str(a_support[i]), a[0]])
+        s.add_row([str(a_support[i]), a[i]])
     print(s)
 
 
@@ -175,16 +196,22 @@ def inf_solutions_condition(a, cols):  # sprawdza czy zadanie spełnia warunki n
     for j in range(1, cols):  # jest to warunek y_0 j >= 0
         if a[0, j] < 0:
             return False
-        return True
+    print('zadanie może mieć nieskonczenie wiele rozwiazan')
+    return True
 
 
 def is_on_limited_set(a, rows, cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
     col = 0
-    for j in range(1, cols):  # sprawdza czy w wierszu występuje zero - warunek: y_0 j_0 = 0
+    print('sprawdamy ograniczone zadanie')
+    print(a)
+    for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
         if a[0, j] == 0:
             col = j
-        else:
-            return col
+            print('Jest 0 w pierwszym wierszu')
+
+    if col == 0:
+        print('nie ma 0 w pierwszym wierszu')
+        return col
 
     for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
         if a[i, 0] > 0:
@@ -231,11 +258,11 @@ def is_on_unlimited_task(a, rows, cols):  # sprawdza czy zadanie jest nieogranic
 
 
 def answer_dict(a, a_goal, a_support, a_dict):
-    for i in range(1, len(a_goal)):
-        a_dict[a_goal[i]] = a[0, i]
+    for j in range(1, len(a_goal)):
+        a_dict[a_goal[j]] = a[0, j]
 
-    for j in range(1, len(a_support)):
-        a_dict[a_support[j]] = a[j, 0]
+    for i in range(1, len(a_support)):
+        a_dict[a_support[i]] = a[i, 0]
 
 
 def answer_array(a_dict, ans):
@@ -260,6 +287,7 @@ def is_optimal(rows, a):  # test optymalności zaczyna się od wiersza 1 nie od 
     for i in range(1, rows):
         if a[i, 0] < 0:
             return False
+    print('rozwiązanie optymalne')
     return True
 
 
@@ -297,13 +325,24 @@ def row_to_simplex(a, rows, col):  # szukamy jakie zmienne musimy ze sobą zamie
     return row_output
 
 
-def variable_to_remove(rows, a):
-    x = a[1, 0]
+def variable_to_remove(rows, a):    # usuwamy wiersz, który min < 0
     row = 1
-    for i in range(1, rows - 1):
-        if x > a[i + 1, 0]:
+    x = 0
+    new_starting_point = 0
+    for i in range(1, rows):    # bierze pierwszy element z 0 kolumny < 0
+        if a[i, 0] < 0:
+            x = a[i, 0]
+            new_starting_point += 1
+            row = new_starting_point
+            break
+        else:
+            new_starting_point += 1
+
+    for i in range(new_starting_point, rows - 1):
+        if a[i + 1, 0] < 0 and a[i + 1, 0] < x:
             x = a[i + 1, 0]
-            row += 1
+            row = i + 1
+
     print('Usuwamy wiersz: ' + str(row))
     print(x)
     return row
@@ -313,22 +352,27 @@ def variable_to_add(cols, a, row):
     new_starting_point = 0
     x = 0
     col = 1
+    temp = 0
 
     for j in range(1, cols):  # tutaj bierze pierwszą napotkaną wartość y_0j/y_rj < 0
         if a[row, j] < 0:
             x = a[0, 1] / a[row, j]
-            # print(x)
+            temp = a[row, j]
             new_starting_point += 1
             print('Nowy punkt startowy to: ')
             print(new_starting_point)
+            col = new_starting_point
             break
+        else:
+            new_starting_point += 1
 
     for j in range(new_starting_point, cols - 1):
-        if a[row, j + 1] < 0 and a[0, j] / a[row, j + 1] > x:
+        if a[row, j + 1] < 0 and a[0, j + 1] / a[row, j + 1] > x:
+            temp = a[row, j + 1]
             x = a[0, j] / a[row, j + 1]
-            col += 1
+            col = j + 1
     print('Dodajemy kolumnę: ' + str(col))
-    print(x)
+    print(temp)
     return col
 
 
@@ -343,10 +387,7 @@ def gaussian_elimination(a, row, col, rows, cols):
             elif i != row and j == col:
                 a[i, j] = -b[i, col] / b[row, col]
             else:
-                # print(b)
-                # print(b[i, j], '- (', b[i, col], '*', b[row, j], '/', b[row, col], ')')
                 a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
-                # print(a[i, j])
     return a
 
 
