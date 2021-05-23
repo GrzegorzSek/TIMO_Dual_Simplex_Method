@@ -872,8 +872,6 @@ class Ui_MainWindow(object):
                     a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
                     # print(a[i][j])
                     # print(a)
-        print('to jest A: ', a)
-        print('print b: ', b)
         return a
 
 
