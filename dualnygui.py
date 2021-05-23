@@ -498,7 +498,7 @@ class Ui_MainWindow(object):
 
         rows = self.iloscOgr + 1
         cols = self.iloscZm + 1
-        dim = deepcopy(cols)
+        dim = self.iloscZm
 
         step_counter = 1  # liczy kroki - kolejne tabele simpleksowe
 
@@ -578,12 +578,12 @@ class Ui_MainWindow(object):
             # print()
 
             # print("wynik jako dictionary")
-            # self.answer_dict(a, a_goal, a_support, a_dict)
+            self.answer_dict(a, a_goal, a_support, a_dict)
             # print(a_dict)
 
             # print("wynik jako wektor")
-            # ans1 = []
-            # self.answer_array(a_dict, ans1)
+            ans1 = []
+            self.answer_array(a_dict, ans1)
             # print(ans1)
             # print()
 
@@ -655,8 +655,8 @@ class Ui_MainWindow(object):
                     solution.append(b[w, col])
                     break
 
-        print('Rozwiązanie: ')
-        print('x + ' + str(solution) + 't')
+        self.textBrowser.append('Rozwiązanie: ')
+        self.textBrowser.append('x + ' + str(solution) + 't')
 
     def print_solution(self, a, rows, cols, a_goal, a_support):
         s = PrettyTable(['X', str(a_goal)])
@@ -681,13 +681,11 @@ class Ui_MainWindow(object):
             if d < dim - 1:
                 # print(bounded_solution[d], end="")
                 # print('*\u03BB' + str(d + 1) + ' + ', end="")
-                self.textBrowser.append(str(bounded_solution[d]))
-                self.textBrowser.append('*\u03BB' + str(d + 1) + ' + ')
+                self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1) + ' + ')
             else:
                 # print(bounded_solution[d], end="")
                 # print('*\u03BB' + str(d + 1))
-                self.textBrowser.append(str(bounded_solution[d]))
-                self.textBrowser.append('*\u03BB' + str(d + 1))
+                self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1))
 
     def is_on_limited_set(self, a, rows,
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
