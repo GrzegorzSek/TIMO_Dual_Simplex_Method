@@ -509,12 +509,13 @@ class Ui_MainWindow(object):
         self.textBrowser.append("Tablica: ")
         self.print_solution(a, rows, cols, a_goal, a_support)
         self.textBrowser.append(' ')
-        self.textBrowser.append('=============================================')
-        self.textBrowser.append(' ')
 
         if is_a:
             # print('Rozwiązanie jest dualnie dopuszcalne')
             self.textBrowser.append('Rozwiązanie jest dualnie dopuszcalne')
+            self.textBrowser.append(' ')
+            self.textBrowser.append('=============================================')
+            self.textBrowser.append(' ')
             is_b = self.is_optimal(rows, a)
 
             while not is_b:
@@ -597,41 +598,45 @@ class Ui_MainWindow(object):
                     bounded_solution[0, 0] = a_dict[1]
                     bounded_solution[0, 1] = a_dict[2]
                     for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
-                        self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
-                        self.textBrowser.append(' ')
+                        # self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze
+                        # ograniczonym') self.textBrowser.append(' ')
                         col_no = self.col_to_opt(a, cols)
                         row_no = self.row_to_simplex(a, rows, col_no)
                         a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
                         self.swap_x(a_goal, a_support, row_no, col_no)
 
-                        print(a)
-                        print("wynik jako dictionary")
+                        # print(a)
+                        # print("wynik jako dictionary")
                         self.answer_dict(a, a_goal, a_support, a_dict2)
-                        print(a_dict2)
+                        # print(a_dict2)
 
-                        print("wynik jako wektor")
+                        # print("wynik jako wektor")
                         ans2 = []
                         self.answer_array(a_dict2, ans2)
-                        print(ans2)
-                        print()
+                        # print(ans2)
+                        # print()
 
                         bounded_solution[d, 0] = a_dict2[1]
                         bounded_solution[d, 1] = a_dict2[2]
                     self.print_bounded_solution(bounded_solution)
+                    self.textBrowser.append(" ")
+                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
                 elif on_unlimited_set != 0:
-                    print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
+                    # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
                     self.print_unbounded_solution(a, a_support, a_goal, dim)
                 else:
-                    print('Zadanie posiada tylko jedno rozwiązanie')
+                    self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
+                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
             else:
                 unlimited_task = self.is_on_unlimited_task(a, rows, cols)
                 if unlimited_task:
                     self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
                 else:
                     self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
+                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
 
         else:
-            print('Rozwiązanie nie jest dualnie dopuszczalne')
+            self.textBrowser.append('Rozwiązanie nie jest dualnie dopuszczalne')
 
     def print_unbounded_solution(self, a, a_support, a_goal, dim):
         b = deepcopy(a)
@@ -671,12 +676,12 @@ class Ui_MainWindow(object):
         for j in range(1, cols):  # jest to warunek y_0 j >= 0
             if a[0, j] < 0:
                 return False
-        self.textBrowser.append('Zadanie może mieć nieskonczenie wiele rozwiazan')
+        # self.textBrowser.append('Zadanie może mieć nieskonczenie wiele rozwiazan')
         return True
 
     def print_bounded_solution(self, bounded_solution):
         dim = bounded_solution.shape[0]
-        print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
+        # print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
         for d in range(0, dim):
             if d < dim - 1:
                 # print(bounded_solution[d], end="")
@@ -690,22 +695,22 @@ class Ui_MainWindow(object):
     def is_on_limited_set(self, a, rows,
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
         col = 0
-        print('sprawdamy ograniczone zadanie')
+        # print('sprawdamy ograniczone zadanie')
         print(a)
         for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
             if a[0, j] == 0:
                 col = j
-                self.textBrowser.append('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
+                # self.textBrowser.append('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
 
         if col == 0:
-            self.textBrowser.append('nie ma 0 w pierwszym wierszu')
+            # self.textBrowser.append('nie ma 0 w pierwszym wierszu')
             return col
 
         for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
             if a[i, 0] > 0:
-                self.textBrowser.append('a[' + str(i) + ', 0] > 0')
+                # self.textBrowser.append('a[' + str(i) + ', 0] > 0')
                 if a[i, col] > 0:
-                    self.textBrowser.append('a[' + str(i) + ', ' + str(col) + '] > 0')
+                    # self.textBrowser.append('a[' + str(i) + ', ' + str(col) + '] > 0')
                     return col
 
         return 0
@@ -767,7 +772,9 @@ class Ui_MainWindow(object):
         for i in range(1, rows):
             if a[i, 0] < 0:
                 return False
+        self.textBrowser.append(' ')
         self.textBrowser.append('Rozwiązanie optymalne')
+        self.textBrowser.append(' ')
         return True
 
     def col_to_opt(self, a, cols):  # bierzemy kolumnę, dla której w pierwszym wierszu jest zero
