@@ -14,7 +14,7 @@ from prettytable import PrettyTable
 
 def main():
     # a = np.array(
-        # [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
+    # [[0., 1., 1.], [-8., -1., -2.], [-6., -2., -1.], [-5., -1., -1.]])  # wiele rozwiązań na zbiorze ograniczonym
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
@@ -23,7 +23,7 @@ def main():
     # a = np.array([[1., 2., 3., 4., 5., 6.], [-1., -2., -3., -4., -5., -6.], [-4., -3., -2., -1., 1., 5.]])
     print(a)
 
-    dim = 4     # wymiar zadania
+    dim = 4  # wymiar zadania
     a_dict = {}
     a_dict2 = {}
     a_dict3 = {}
@@ -32,8 +32,8 @@ def main():
     rows: int = a.shape[0]  # liczba wierszy
     cols: int = a.shape[1]  # liczba kolumn
     # print(rows, cols)
-    step_counter = 1    # liczy kroki - kolejne tabele simpleksowe
-    bounded_solution = np.zeros((dim, dim))     # tabela do wyniku wielu rozw. na zbiorze ogr.
+    step_counter = 1  # liczy kroki - kolejne tabele simpleksowe
+    bounded_solution = np.zeros((dim, dim))  # tabela do wyniku wielu rozw. na zbiorze ogr.
 
     is_a = is_acceptable(cols, a)
 
@@ -45,9 +45,7 @@ def main():
             print('KROK: ' + str(step_counter))
             print('Rozwiązanie jest nieoptymalne')
             row_of_variable_removed_from_base = variable_to_remove(rows, a)  # wiersz zmiennej do usunięcia
-            # print('wiersz:' + str(row_of_variable_removed_from_base))
             col_of_variable_added_to_base = variable_to_add(cols, a, row_of_variable_removed_from_base)
-            # print('kolumna:' + str(col_of_variable_added_to_base))
             a = gaussian_elimination(a, row_of_variable_removed_from_base, col_of_variable_added_to_base, rows, cols)
             swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
 
@@ -175,8 +173,8 @@ def print_unbounded_solution(a, a_support, a_goal, dim):
             # print(j)
             break
 
-    for i in range(1, dim):     # pętla po x1, x2, ...
-        for w in range(2, rows):    # pętla po wierszach
+    for i in range(1, dim):  # pętla po x1, x2, ...
+        for w in range(2, rows):  # pętla po wierszach
             if i == b[w][0]:
                 # print(b[w, col])
                 solution.append(b[w][col])
@@ -192,10 +190,10 @@ def print_bounded_solution(bounded_solution):
     for d in range(0, dim):
         if d < dim - 1:
             print(bounded_solution[d], end="")
-            print('*\u03BB' + str(d+1) + ' + ', end="")
+            print('*\u03BB' + str(d + 1) + ' + ', end="")
         else:
             print(bounded_solution[d], end="")
-            print('*\u03BB' + str(d+1))
+            print('*\u03BB' + str(d + 1))
 
 
 def print_solution(a, rows, cols, a_goal, a_support):
@@ -338,7 +336,7 @@ def row_to_simplex(a, rows, col):  # szukamy jakie zmienne musimy ze sobą zamie
     return row_output
 
 
-def variable_to_remove(rows, a):    # usuwamy wiersz, który min < 0
+def variable_to_remove(rows, a):  # usuwamy wiersz, który min < 0
     # x = a[1, 0]
     # row = 1
     # for i in range(1, rows - 1):
@@ -348,7 +346,7 @@ def variable_to_remove(rows, a):    # usuwamy wiersz, który min < 0
     row = 1
     x = 0
     new_starting_point = 0
-    for i in range(1, rows):    # bierze pierwszy element z 0 kolumny < 0
+    for i in range(1, rows):  # bierze pierwszy element z 0 kolumny < 0
         if a[i][0] < 0:
             x = a[i][0]
             new_starting_point += 1

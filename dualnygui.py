@@ -8,14 +8,6 @@ import cgitb
 
 cgitb.enable(format='text')
 
-"""
-to do:
-- włączanie lineEdit
-- otrzymywanie inputu
-- wypisanie outputu
-
-"""
-
 
 def bind(objectName, propertyName, type):
     def getter(self):
@@ -326,6 +318,7 @@ class Ui_MainWindow(object):
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QtCore.QRect(390, 51, 391, 201))
         self.textBrowser.setObjectName("textBrowser")
+        self.textBrowser.setFont(QtGui.QFont("Monospace"))
 
         self.labelTablice = QtWidgets.QLabel(self.centralwidget)
         self.labelTablice.setGeometry(QtCore.QRect(400, 30, 47, 13))
@@ -335,6 +328,9 @@ class Ui_MainWindow(object):
         self.line_5.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_5.setObjectName("line_5")
+        self.resetButton = QtWidgets.QPushButton(self.centralwidget)
+        self.resetButton.setGeometry(QtCore.QRect(290, 70, 61, 21))
+        self.resetButton.setObjectName("resetButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -348,7 +344,12 @@ class Ui_MainWindow(object):
         # ustawianie ilości zmiennych i ograniczeń
         self.comboZmienne.currentIndexChanged.connect(lambda: self.ustawZmienne(int(self.comboZmienne.currentIndex())))
         self.comboOgr.currentIndexChanged.connect(lambda: self.ustawOgraniczenia(int(self.comboOgr.currentIndex())))
+
+        # na guzik start
         self.buttonStart.clicked.connect(self.algorytmDualnySimplex)
+
+        # na guzik reset
+        self.resetButton.clicked.connect(self.resetOkna)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -386,11 +387,12 @@ class Ui_MainWindow(object):
         self.labelGae.setText(_translate("MainWindow", "≥"))
         self.buttonDraw.setText(_translate("MainWindow", "Rysuj"))
         self.labelTablice.setText(_translate("MainWindow", "Tablice"))
+        self.resetButton.setText(_translate("MainWindow", "Reset"))
 
     def ustawZmienne(self, value):
-        print("Ilość zmiennych: ", value)
+        # print("Ilość zmiennych: ", value)
         self.iloscZm = value
-        self.textBrowser.append("Ilość zmiennych:" + str(self.iloscZm))
+        # self.textBrowser.append("Ilość zmiennych:" + str(self.iloscZm))
         for i in range(value):
             self.aktywneZm[i].setEnabled(True)
 
@@ -408,9 +410,9 @@ class Ui_MainWindow(object):
             self.comboOgr.setCurrentIndex(0)
 
     def ustawOgraniczenia(self, value):
-        print("Ilość ograniczeń: ", value)
+        # print("Ilość ograniczeń: ", value)
         self.iloscOgr = value
-        self.textBrowser.append("Ilość ograniczeń: " + str(self.iloscOgr))
+        # self.textBrowser.append("Ilość ograniczeń: " + str(self.iloscOgr))
         for i in range(value):
             self.aktywneOgr[i][5].setEnabled(True)
             for j in range(self.iloscZm):
@@ -426,6 +428,23 @@ class Ui_MainWindow(object):
                 for element in self.aktywneOgr[y]:
                     element.setEnabled(False)  # self.aktywneZm[y].setEnabled(False)
 
+    def resetOkna(self):
+        self.macierz = []
+        self.textBrowser.clear()
+        self.comboOgr.setCurrentIndex(0)
+        self.comboZmienne.setCurrentIndex(0)
+        self.iloscZm = 0
+        self.iloscOgr = 0
+
+        for element in self.aktywneZm:
+            element.clear()
+            element.setEnabled(False)
+
+        for row in self.aktywneOgr:
+            for column in row:
+                column.clear()
+                column.setEnabled(False)
+
     def algorytmDualnySimplex(self):
 
         iloscCelu = int(self.iloscZm)
@@ -439,7 +458,6 @@ class Ui_MainWindow(object):
                             [0, 0, 0, 0, 0, 0]]
         for i in range(self.iloscZm):
             tempZmienne.append(float(self.aktywneZm[i].text()))
-        self.textBrowser.append(str(tempZmienne))
         # tworzenie temp macierzy
         for i in range(iloscOgraniczen):
             for j in range(iloscCelu):
@@ -464,11 +482,12 @@ class Ui_MainWindow(object):
 
         print(self.macierz)
 
-        a = deepcopy(self.macierz)
-        # dim = 3  # wymiar zadania
+        kopiamacierzy = deepcopy(self.macierz)
+        a = np.array(kopiamacierzy)
         a_dict = {}
         a_dict2 = {}
         a_dict3 = {}
+
         a_goal = [0]  # f celu
         for i in range(1, self.iloscZm + 1):
             a_goal.append(i)
@@ -480,18 +499,27 @@ class Ui_MainWindow(object):
         rows = self.iloscOgr + 1
         cols = self.iloscZm + 1
         dim = deepcopy(cols)
+
         step_counter = 1  # liczy kroki - kolejne tabele simpleksowe
+
         bounded_solution = np.zeros((dim, dim))  # tabela do wyniku wielu rozw. na zbiorze ogr.
 
         is_a = self.is_acceptable(cols, a)
 
+        self.textBrowser.append("Tablica: ")
+        self.print_solution(a, rows, cols, a_goal, a_support)
+        self.textBrowser.append(' ')
+        self.textBrowser.append('=============================================')
+        self.textBrowser.append(' ')
+
         if is_a:
-            print('Rozwiązanie jest dualnie dopuszcalne')
+            # print('Rozwiązanie jest dualnie dopuszcalne')
+            self.textBrowser.append('Rozwiązanie jest dualnie dopuszcalne')
             is_b = self.is_optimal(rows, a)
 
             while not is_b:
-                print('KROK: ' + str(step_counter))
-                print('Rozwiązanie jest nieoptymalne')
+                self.textBrowser.append('KROK: ' + str(step_counter))
+                # self.textBrowser.append('Rozwiązanie jest nieoptymalne')
                 row_of_variable_removed_from_base = self.variable_to_remove(rows, a)  # wiersz zmiennej do usunięcia
                 col_of_variable_added_to_base = self.variable_to_add(cols, a, row_of_variable_removed_from_base)
                 a = self.gaussian_elimination(a, row_of_variable_removed_from_base, col_of_variable_added_to_base, rows,
@@ -501,65 +529,76 @@ class Ui_MainWindow(object):
                 is_b = self.is_optimal(rows, a)
                 step_counter += 1
 
-                print("macierz wyników")
-                print(a)
-                print('goal:')
-                print(a_goal)
-                print('support')
-                print(a_support)
+                # self.textBrowser.append("Tablica: ")
+                # self.textBrowser.append(' ')
+                # or element in a:
+                #     self.textBrowser.append(str(element))
+
+                # print(a)
+                # print('goal:')
+                # print(a_goal)
+                # print('support')
+                # print(a_support)
                 self.print_solution(a, rows, cols, a_goal, a_support)
-                print()
+                self.textBrowser.append(' ')
+                self.textBrowser.append('=============================================')
+                self.textBrowser.append(' ')
 
-                print("tabele pomocnicze")
-                print("f celu: ")
-                print(a_goal)
-                print("zm pomocnicze: ")
-                print(a_support)
-                print()
+                # print("tabele pomocnicze")
+                # print("f celu: ")
+                # print(a_goal)
+                # print("zm pomocnicze: ")
+                # print(a_support)
+                # print()
 
-                print("wynik jako dictionary")
-                self.answer_dict(a, a_goal, a_support, a_dict3)
-                print(a_dict3)
+                # print("wynik jako dictionary")
+                # self.answer_dict(a, a_goal, a_support, a_dict3)
+                # print(a_dict3)
 
-                print("wynik jako wektor")
-                ans3 = []
-                self.answer_array(a_dict3, ans3)
-                print(ans3)
-                print()
+                # print("wynik jako wektor")
+                # ans3 = []
+                # self.answer_array(a_dict3, ans3)
+                # print(ans3)
+                # print()
 
-            print("macierz wyników")
-            print(a)
-            print()
+            # print("macierz wyników")
+            self.textBrowser.append('WYNIK ALGORYTMU: ')
+            self.print_solution(a, rows, cols, a_goal, a_support)
+            self.textBrowser.append(' ')
+            self.textBrowser.append('=============================================')
+            self.textBrowser.append(' ')
+            # print(a)
+            # print()
 
-            print("tabele pomocnicze")
-            print("f celu: ")
-            print(a_goal)
-            print("zm pomocnicze: ")
-            print(a_support)
-            print()
+            # print("tabele pomocnicze")
+            # print("f celu: ")
+            # print(a_goal)
+            # print("zm pomocnicze: ")
+            # print(a_support)
+            # print()
 
-            print("wynik jako dictionary")
-            self.answer_dict(a, a_goal, a_support, a_dict)
-            print(a_dict)
+            # print("wynik jako dictionary")
+            # self.answer_dict(a, a_goal, a_support, a_dict)
+            # print(a_dict)
 
-            print("wynik jako wektor")
-            ans1 = []
-            self.answer_array(a_dict, ans1)
-            print(ans1)
-            print()
+            # print("wynik jako wektor")
+            # ans1 = []
+            # self.answer_array(a_dict, ans1)
+            # print(ans1)
+            # print()
 
             i_s_c = self.inf_solutions_condition(a, cols)
-            if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań?
+            if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań
                 on_limited_set = self.is_on_limited_set(a, rows, cols)
                 on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
                 if on_limited_set != 0:
-                    print('A_DICT: ')
-                    print(a_dict)
-                    bounded_solution[0][0] = a_dict[1]
-                    bounded_solution[0][1] = a_dict[2]
+                    # print('A_DICT: ')
+                    # print(a_dict)
+                    bounded_solution[0, 0] = a_dict[1]
+                    bounded_solution[0, 1] = a_dict[2]
                     for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
-                        print('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
-                        print()
+                        self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
+                        self.textBrowser.append(' ')
                         col_no = self.col_to_opt(a, cols)
                         row_no = self.row_to_simplex(a, rows, col_no)
                         a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
@@ -576,8 +615,8 @@ class Ui_MainWindow(object):
                         print(ans2)
                         print()
 
-                        bounded_solution[d][0] = a_dict2[1]
-                        bounded_solution[d][1] = a_dict2[2]
+                        bounded_solution[d, 0] = a_dict2[1]
+                        bounded_solution[d, 1] = a_dict2[2]
                     self.print_bounded_solution(bounded_solution)
                 elif on_unlimited_set != 0:
                     print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
@@ -587,15 +626,15 @@ class Ui_MainWindow(object):
             else:
                 unlimited_task = self.is_on_unlimited_task(a, rows, cols)
                 if unlimited_task:
-                    print('Zadanie nieograniczone - brak rozwiązań')
+                    self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
                 else:
-                    print('Zadanie posiada tylko jedno rozwiązanie')
+                    self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
 
         else:
             print('Rozwiązanie nie jest dualnie dopuszczalne')
 
     def print_unbounded_solution(self, a, a_support, a_goal, dim):
-        b = a.copy()
+        b = deepcopy(a)
         a_support.insert(0, 0)
         b = np.row_stack([a_goal, b])
         b = np.column_stack([a_support, b])
@@ -605,15 +644,15 @@ class Ui_MainWindow(object):
         col = 0
         solution = []
         for j in range(2, cols):
-            if b[1][j] == 0:
+            if b[1, j] == 0:
                 col = j
                 break
 
         for i in range(1, dim):  # pętla po x1, x2, ...
             for w in range(2, rows):  # pętla po wierszach
-                if i == b[w][0]:
+                if i == b[w, 0]:
                     # print(b[w, col])
-                    solution.append(b[w][col])
+                    solution.append(b[w, col])
                     break
 
         print('Rozwiązanie: ')
@@ -624,13 +663,15 @@ class Ui_MainWindow(object):
 
         for i in range(0, rows):
             s.add_row([str(a_support[i]), a[i]])
-        print(s)
+        # for prettyelement in s:
+        #    self.textBrowser.append(str(prettyelement))
+        self.textBrowser.append(str(s))
 
     def inf_solutions_condition(self, a, cols):  # sprawdza czy zadanie spełnia warunki na nieskończenie wiele rozwiązań
         for j in range(1, cols):  # jest to warunek y_0 j >= 0
-            if a[0][j] < 0:
+            if a[0, j] < 0:
                 return False
-        print('zadanie może mieć nieskonczenie wiele rozwiazan')
+        self.textBrowser.append('Zadanie może mieć nieskonczenie wiele rozwiazan')
         return True
 
     def print_bounded_solution(self, bounded_solution):
@@ -638,11 +679,15 @@ class Ui_MainWindow(object):
         print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
         for d in range(0, dim):
             if d < dim - 1:
-                print(bounded_solution[d], end="")
-                print('*\u03BB' + str(d + 1) + ' + ', end="")
+                # print(bounded_solution[d], end="")
+                # print('*\u03BB' + str(d + 1) + ' + ', end="")
+                self.textBrowser.append(str(bounded_solution[d]))
+                self.textBrowser.append('*\u03BB' + str(d + 1) + ' + ')
             else:
-                print(bounded_solution[d], end="")
-                print('*\u03BB' + str(d + 1))
+                # print(bounded_solution[d], end="")
+                # print('*\u03BB' + str(d + 1))
+                self.textBrowser.append(str(bounded_solution[d]))
+                self.textBrowser.append('*\u03BB' + str(d + 1))
 
     def is_on_limited_set(self, a, rows,
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
@@ -650,19 +695,19 @@ class Ui_MainWindow(object):
         print('sprawdamy ograniczone zadanie')
         print(a)
         for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
-            if a[0][j] == 0:
+            if a[0, j] == 0:
                 col = j
-                print('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
+                self.textBrowser.append('Jest 0 w pierwszym wierszu, w kolumnie ' + str(col))
 
         if col == 0:
-            print('nie ma 0 w pierwszym wierszu')
+            self.textBrowser.append('nie ma 0 w pierwszym wierszu')
             return col
 
         for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
-            if a[i][0] > 0:
-                print('a[' + str(i) + ', 0] > 0')
-                if a[i][col] > 0:
-                    print('a[' + str(i) + ', ' + str(col) + '] > 0')
+            if a[i, 0] > 0:
+                self.textBrowser.append('a[' + str(i) + ', 0] > 0')
+                if a[i, col] > 0:
+                    self.textBrowser.append('a[' + str(i) + ', ' + str(col) + '] > 0')
                     return col
 
         return 0
@@ -671,39 +716,39 @@ class Ui_MainWindow(object):
         row = 0  # zmienna licząca wiersze z degeneracją
         col = 0
         for j in range(1, cols):  # sprawdza czy w wierszu występuje zero - warunek: y_0 j_0 = 0
-            if a[0][j] == 0:
+            if a[0, j] == 0:
                 col = j
             else:
                 return col
 
         for i in range(1, rows):  # sprawdza czy w zadaniu występuje degeneracja - warunek y_i0 = 0 dla i=1, ..., m
-            if a[i][0] == 0:
+            if a[i, 0] == 0:
                 row = row + 1
 
         if row == rows - 1:
-            print('Zachodzi degeneracja')
+            self.textBrowser.append('Zachodzi degeneracja')
             return col
 
         for i in range(1, rows):  # sprawdza warunek: y_i j_0 <= 0 dla i=1, ..., m
-            if a[i][col] > 0:
+            if a[i, col] > 0:
                 return 0
 
         return col
 
     def is_on_unlimited_task(self, a, rows, cols):  # sprawdza czy zadanie jest nieograniczone
         for j in range(0, cols):
-            if a[0][j] < 0:
+            if a[0, j] < 0:
                 for i in range(1, rows):
-                    if a[i][j] > 0:
+                    if a[i, j] > 0:
                         return False
         return True
 
     def answer_dict(self, a, a_goal, a_support, a_dict):
         for j in range(1, len(a_goal)):
-            a_dict[a_goal[j]] = a[0][j]
+            a_dict[a_goal[j]] = a[0, j]
 
         for i in range(1, len(a_support)):
-            a_dict[a_support[i]] = a[i][0]
+            a_dict[a_support[i]] = a[i, 0]
 
     def answer_array(self, a_dict, ans):
         for i in range(1, len(a_dict) + 1):
@@ -716,20 +761,20 @@ class Ui_MainWindow(object):
 
     def is_acceptable(self, cols, a):  # test dualnej dopuszczalności zaczyna się od wiersza zerowego
         for j in range(cols):
-            if a[0][j] < 0:
+            if a[0, j] < 0:
                 return False
         return True
 
     def is_optimal(self, rows, a):  # test optymalności zaczyna się od wiersza 1 nie od zerowego
         for i in range(1, rows):
-            if a[i][0] < 0:
+            if a[i, 0] < 0:
                 return False
-        print('rozwiązanie optymalne')
+        self.textBrowser.append('Rozwiązanie optymalne')
         return True
 
     def col_to_opt(self, a, cols):  # bierzemy kolumnę, dla której w pierwszym wierszu jest zero
         for j in range(1, cols):
-            if a[0][j] == 0:
+            if a[0, j] == 0:
                 return j
 
     def row_to_simplex(self, a, rows, col):  # szukamy jakie zmienne musimy ze sobą zamienić dla wielu rozw.
@@ -738,17 +783,17 @@ class Ui_MainWindow(object):
         row_output = 0
 
         for i in range(1, rows):
-            if a[i][0] / a[i][col] >= 0:
-                x = a[i][0] / a[i][col]
+            if a[i, 0] / a[i, col] >= 0:
+                x = a[i, 0] / a[i, col]
                 row_output = i
                 x_i = i + 1
 
         if x_i <= rows:
             for j in range(x_i, rows):
-                if a[j][0] / a[j][col] >= 0:
-                    y = a[j][0] / a[j][col]
+                if a[j, 0] / a[j, col] >= 0:
+                    y = a[j, 0] / a[j, col]
                     if y < x:
-                        x = a[j][0] / a[j][col]
+                        x = a[j, 0] / a[j, col]
                         row_output = j
 
         return row_output
@@ -758,8 +803,8 @@ class Ui_MainWindow(object):
         x = 0
         new_starting_point = 0
         for i in range(1, rows):  # bierze pierwszy element z 0 kolumny < 0
-            if a[i][0] < 0:
-                x = a[i][0]
+            if a[i, 0] < 0:
+                x = a[i, 0]
                 new_starting_point += 1
                 row = new_starting_point
                 break
@@ -767,12 +812,12 @@ class Ui_MainWindow(object):
                 new_starting_point += 1
 
         for i in range(new_starting_point, rows - 1):
-            if a[i + 1][0] < 0 and a[i + 1][0] < x:
-                x = a[i + 1][0]
+            if a[i + 1, 0] < 0 and a[i + 1, 0] < x:
+                x = a[i + 1, 0]
                 row = i + 1
 
-        print('Usuwamy wiersz: ' + str(row))
-        print(x)
+        # print('Usuwamy wiersz: ' + str(row))
+        # print(x)
         return row
 
     def variable_to_add(self, cols, a, row):
@@ -782,24 +827,24 @@ class Ui_MainWindow(object):
         temp = 0
 
         for j in range(1, cols):  # tutaj bierze pierwszą napotkaną wartość y_0j/y_rj < 0
-            if a[row][j] < 0:
-                x = a[0][1] / a[row][j]
-                temp = a[row][j]
+            if a[row, j] < 0:
+                x = a[0, 1] / a[row, j]
+                temp = a[row, j]
                 new_starting_point += 1
-                print('Nowy punkt startowy to: ')
-                print(new_starting_point)
+                # print('Nowy punkt startowy to: ')
+                # print(new_starting_point)
                 col = new_starting_point
                 break
             else:
                 new_starting_point += 1
 
         for j in range(new_starting_point, cols - 1):
-            if a[row][j + 1] < 0 and a[0][j + 1] / a[row][j + 1] > x:
-                temp = a[row][j + 1]
-                x = a[0][j] / a[row][j + 1]
+            if a[row, j + 1] < 0 and a[0, j + 1] / a[row, j + 1] > x:
+                temp = a[row, j + 1]
+                x = a[0, j] / a[row, j + 1]
                 col = j + 1
-        print('Dodajemy kolumnę: ' + str(col))
-        print(temp)
+        # print('Dodajemy kolumnę: ' + str(col))
+        # print(temp)
         return col
 
     def gaussian_elimination(self, a, row, col, rows, cols):
@@ -808,26 +853,26 @@ class Ui_MainWindow(object):
             for j in range(0, cols):  # kolumny
                 if i == row and j == col:
                     # print('1 /', b[i][j], '=')
-                    a[i][j] = 1 / b[i][j]
+                    a[i, j] = 1 / b[i, j]
                     # print(a[i][j])
                     # print(a)
                 elif i == row and j != col:
                     # print(b[row][j], ' / ', b[row][col], '=')
-                    a[i][j] = b[row][j] / b[row][col]
+                    a[i, j] = b[row, j] / b[row, col]
                     # print(a[i][j])
                     # print(a)
                 elif i != row and j == col:
                     # print('-', b[i][col], ' / ', b[row][col], ' = ', a[i][j], '=')
-                    a[i][j] = -b[i][col] / b[row][col]
+                    a[i, j] = -b[i, col] / b[row, col]
                     # print(a[i][j])
                     # print(a)
                 else:
                     # print(b)
                     # print(b[i][j], '- (', b[i][col], '*', b[row][j], '/', b[row][col], ') = ')
-                    a[i][j] = b[i][j] - b[i][col] * b[row][j] / b[row][col]
+                    a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
                     # print(a[i][j])
                     # print(a)
-        print('print b: ', b)
+        # print('print b: ', b)
         return a
 
 
