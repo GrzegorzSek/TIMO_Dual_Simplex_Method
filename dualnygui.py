@@ -502,7 +502,7 @@ class Ui_MainWindow(object):
 
         step_counter = 1  # liczy kroki - kolejne tabele simpleksowe
 
-        bounded_solution = np.zeros((self.iloscZm, self.iloscZm))  # tabela do wyniku wielu rozw. na zbiorze ogr.
+        bounded_solution = np.zeros((dim, dim))  # tabela do wyniku wielu rozw. na zbiorze ogr.
 
         is_a = self.is_acceptable(cols, a)
 
