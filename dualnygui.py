@@ -5,6 +5,7 @@ from copy import deepcopy
 import numpy as np
 from prettytable import PrettyTable
 import cgitb
+import matplotlib.pyplot as plt
 
 cgitb.enable(format='text')
 
@@ -484,6 +485,7 @@ class Ui_MainWindow(object):
 
         kopiamacierzy = deepcopy(self.macierz)
         a = np.array(kopiamacierzy)
+        matrix_to_plot = deepcopy(a)
         a_dict = {}
         a_dict2 = {}
         a_dict3 = {}
@@ -595,6 +597,7 @@ class Ui_MainWindow(object):
                 on_limited_set = self.is_on_limited_set(a, rows, cols)
                 on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
                 if on_limited_set != 0:
+                    which_solution = 1
                     # print('A_DICT: ')
                     # print(a_dict)
                     bounded_solution[0, 0] = a_dict[1]
@@ -624,9 +627,12 @@ class Ui_MainWindow(object):
                     self.print_bounded_solution(bounded_solution)
                     self.textBrowser.append(" ")
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, bounded_solution)
                 elif on_unlimited_set != 0:
+                    which_solution = 2
                     # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
                     self.print_unbounded_solution(a, a_support, a_goal)
+                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
                 else:
                     self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
@@ -640,6 +646,68 @@ class Ui_MainWindow(object):
 
         else:
             self.textBrowser.append('Rozwiązanie nie jest dualnie dopuszczalne')
+
+    def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
+
+        x = np.arange(-10, 10, 0.1)
+        plt.ylim(-5, 10)
+        plt.xlim(-5, 10)
+
+        if which_solution == 1:     # wiele na ograniczonym
+            for ar in args:  # bounded_solution
+                b_s = ar
+            for i in range(1, rows):
+                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                plt.plot(x, y)
+                if -matrix_to_plot[i, 2] > 0:
+                    plt.fill_between(x, y, np.max(y), alpha=0.2)
+                elif -matrix_to_plot[i, 2] < 0:
+                    plt.fill_between(x, y, np.min(y), alpha=0.2)
+            plt.plot([b_s[0][0], b_s[1][0]], [b_s[0][1], b_s[1][1]], 'k-')  # rysowanie odcinka
+            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+            plt.plot(x, y, 'ro')
+        elif which_solution == 2:   # wiele na nieogr
+            support = args[0]
+            goal = args[1]
+            print(support)
+            print(goal)
+            x_1 = 0  #współrzędne x1 i x2
+            x_2 = 0
+            for j in range(0, cols):    # pobranie wartości x1, x2 (jesli jest) z kolumny
+                if goal[j] == 1:
+                    x_1 = a[0, j]
+                if goal[j] == 2:
+                    x_2 = a[0, j]
+
+            for i in range(2, rows + 1):    # pobranie wartości x1, x2 (jesli jest) z wiersza
+                if support[i] == 1:
+                    x_1 = a[i - 1, 0]
+                if support[i] == 2:
+                    x_2 = a[i - 1, 0]
+
+            plt.plot(x_1, x_2, 'ro')    # rysowanie punktu półprostej
+
+            for i in range(1, rows):    # rysowanie ograniczen
+                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                print(matrix_to_plot[i, 1])
+                print(matrix_to_plot[i, 0])
+                print(matrix_to_plot[i, 2])
+                plt.plot(x, y)
+                if -matrix_to_plot[i, 2] > 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.max(y), alpha=0.2)
+                elif -matrix_to_plot[i, 2] < 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, y, -100, alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.min(y), alpha=0.2)
+
+            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+            plt.plot(x, y, 'k-')
+
+        plt.show()
 
     def print_unbounded_solution(self, a, a_support, a_goal):
         b = deepcopy(a)
