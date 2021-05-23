@@ -485,7 +485,7 @@ class Ui_MainWindow(object):
 
         kopiamacierzy = deepcopy(self.macierz)
         a = np.array(kopiamacierzy)
-        matrix_to_plot = deepcopy(a)
+        matrix_to_plot = deepcopy(a)    # kopia surowych danych z interfejsu (potrzebne do plotowania ogr.)
         a_dict = {}
         a_dict2 = {}
         a_dict3 = {}
