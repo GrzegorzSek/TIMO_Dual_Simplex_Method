@@ -502,7 +502,7 @@ class Ui_MainWindow(object):
 
         step_counter = 1  # liczy kroki - kolejne tabele simpleksowe
 
-        bounded_solution = np.zeros((dim, dim))  # tabela do wyniku wielu rozw. na zbiorze ogr.
+        bounded_solution = np.zeros((self.iloscZm, self.iloscZm))  # tabela do wyniku wielu rozw. na zbiorze ogr.
 
         is_a = self.is_acceptable(cols, a)
 
@@ -592,8 +592,8 @@ class Ui_MainWindow(object):
                 on_limited_set = self.is_on_limited_set(a, rows, cols)
                 on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
                 if on_limited_set != 0:
-                    # print('A_DICT: ')
-                    # print(a_dict)
+                    print('A_DICT: ')
+                    print(a_dict)
                     bounded_solution[0, 0] = a_dict[1]
                     bounded_solution[0, 1] = a_dict[2]
                     for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
@@ -604,6 +604,7 @@ class Ui_MainWindow(object):
                         a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
                         self.swap_x(a_goal, a_support, row_no, col_no)
 
+                        print('Druga tabela: ')
                         print(a)
                         print("wynik jako dictionary")
                         self.answer_dict(a, a_goal, a_support, a_dict2)
@@ -620,7 +621,7 @@ class Ui_MainWindow(object):
                     self.print_bounded_solution(bounded_solution)
                 elif on_unlimited_set != 0:
                     print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
-                    self.print_unbounded_solution(a, a_support, a_goal, dim)
+                    self.print_unbounded_solution(a, a_support, a_goal, cols)
                 else:
                     print('Zadanie posiada tylko jedno rozwiązanie')
             else:
@@ -633,7 +634,8 @@ class Ui_MainWindow(object):
         else:
             print('Rozwiązanie nie jest dualnie dopuszczalne')
 
-    def print_unbounded_solution(self, a, a_support, a_goal, dim):
+
+    def print_unbounded_solution(self, a, a_support, a_goal, cols):
         b = deepcopy(a)
         a_support.insert(0, 0)
         b = np.row_stack([a_goal, b])
@@ -648,7 +650,7 @@ class Ui_MainWindow(object):
                 col = j
                 break
 
-        for i in range(1, dim):  # pętla po x1, x2, ...
+        for i in range(1, cols):  # pętla po x1, x2, ...
             for w in range(2, rows):  # pętla po wierszach
                 if i == b[w, 0]:
                     # print(b[w, col])
@@ -870,7 +872,8 @@ class Ui_MainWindow(object):
                     a[i, j] = b[i, j] - b[i, col] * b[row, j] / b[row, col]
                     # print(a[i][j])
                     # print(a)
-        # print('print b: ', b)
+        print('to jest A: ', a)
+        print('print b: ', b)
         return a
 
 
