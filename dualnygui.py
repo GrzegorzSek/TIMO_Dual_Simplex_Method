@@ -803,17 +803,31 @@ class Ui_MainWindow(object):
         return col
 
     def gaussian_elimination(self, a, row, col, rows, cols):
-        b = a.copy()
+        b = deepcopy(a)
         for i in range(0, rows):  # wiersze
             for j in range(0, cols):  # kolumny
                 if i == row and j == col:
+                    # print('1 /', b[i][j], '=')
                     a[i][j] = 1 / b[i][j]
+                    # print(a[i][j])
+                    # print(a)
                 elif i == row and j != col:
+                    # print(b[row][j], ' / ', b[row][col], '=')
                     a[i][j] = b[row][j] / b[row][col]
+                    # print(a[i][j])
+                    # print(a)
                 elif i != row and j == col:
+                    # print('-', b[i][col], ' / ', b[row][col], ' = ', a[i][j], '=')
                     a[i][j] = -b[i][col] / b[row][col]
+                    # print(a[i][j])
+                    # print(a)
                 else:
+                    # print(b)
+                    # print(b[i][j], '- (', b[i][col], '*', b[row][j], '/', b[row][col], ') = ')
                     a[i][j] = b[i][j] - b[i][col] * b[row][j] / b[row][col]
+                    # print(a[i][j])
+                    # print(a)
+        print('print b: ', b)
         return a
 
 
