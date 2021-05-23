@@ -592,8 +592,8 @@ class Ui_MainWindow(object):
                 on_limited_set = self.is_on_limited_set(a, rows, cols)
                 on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
                 if on_limited_set != 0:
-                    print('A_DICT: ')
-                    print(a_dict)
+                    # print('A_DICT: ')
+                    # print(a_dict)
                     bounded_solution[0, 0] = a_dict[1]
                     bounded_solution[0, 1] = a_dict[2]
                     for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
@@ -705,9 +705,9 @@ class Ui_MainWindow(object):
 
         for i in range(1, rows):  # sprawdza kolejne dwa warunki y_i_0 0 > 0 oraz y_i_0 j_0 >0
             if a[i, 0] > 0:
-                self.textBrowser.append('a[' + str(i) + ', 0] > 0')
+                # self.textBrowser.append('a[' + str(i) + ', 0] > 0')
                 if a[i, col] > 0:
-                    self.textBrowser.append('a[' + str(i) + ', ' + str(col) + '] > 0')
+                    # self.textBrowser.append('a[' + str(i) + ', ' + str(col) + '] > 0')
                     return col
 
         return 0
