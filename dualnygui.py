@@ -623,7 +623,7 @@ class Ui_MainWindow(object):
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
                 elif on_unlimited_set != 0:
                     # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
-                    self.print_unbounded_solution(a, a_support, a_goal, dim)
+                    self.print_unbounded_solution(a, a_support, a_goal)
                 else:
                     self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
@@ -638,7 +638,7 @@ class Ui_MainWindow(object):
         else:
             self.textBrowser.append('Rozwiązanie nie jest dualnie dopuszczalne')
 
-    def print_unbounded_solution(self, a, a_support, a_goal, dim):
+    def print_unbounded_solution(self, a, a_support, a_goal):
         b = deepcopy(a)
         a_support.insert(0, 0)
         b = np.row_stack([a_goal, b])
@@ -653,7 +653,7 @@ class Ui_MainWindow(object):
                 col = j
                 break
 
-        for i in range(1, dim):  # pętla po x1, x2, ...
+        for i in range(1, cols):  # pętla po x1, x2, ...
             for w in range(2, rows):  # pętla po wierszach
                 if i == b[w, 0]:
                     # print(b[w, col])
