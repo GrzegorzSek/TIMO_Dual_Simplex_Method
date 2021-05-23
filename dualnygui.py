@@ -509,6 +509,8 @@ class Ui_MainWindow(object):
         self.textBrowser.append("Tablica: ")
         self.print_solution(a, rows, cols, a_goal, a_support)
         self.textBrowser.append(' ')
+        self.textBrowser.append('=============================================')
+        self.textBrowser.append(' ')
 
         if is_a:
             # print('Rozwiązanie jest dualnie dopuszcalne')
@@ -598,8 +600,9 @@ class Ui_MainWindow(object):
                     bounded_solution[0, 0] = a_dict[1]
                     bounded_solution[0, 1] = a_dict[2]
                     for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
-                        # self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze
-                        # ograniczonym') self.textBrowser.append(' ')
+                        self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
+                        self.textBrowser.append(' ')
+
                         col_no = self.col_to_opt(a, cols)
                         row_no = self.row_to_simplex(a, rows, col_no)
                         a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
@@ -668,8 +671,6 @@ class Ui_MainWindow(object):
 
         for i in range(0, rows):
             s.add_row([str(a_support[i]), a[i]])
-        # for prettyelement in s:
-        #    self.textBrowser.append(str(prettyelement))
         self.textBrowser.append(str(s))
 
     def inf_solutions_condition(self, a, cols):  # sprawdza czy zadanie spełnia warunki na nieskończenie wiele rozwiązań
