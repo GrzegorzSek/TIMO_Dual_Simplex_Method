@@ -695,7 +695,7 @@ class Ui_MainWindow(object):
     def is_on_limited_set(self, a, rows,
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
         col = 0
-        # print('sprawdamy ograniczone zadanie')
+        # print('sprawdzamy ograniczone zadanie')
         print(a)
         for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
             if a[0, j] == 0:
