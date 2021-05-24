@@ -18,7 +18,7 @@ def main():
     # a = np.array([[0., 0.5, 1.], [0., -1., 1.], [5., 1., 1.]])    # Tylko jedno rozwiązanie
     # a = np.array([[0., 1., 1.], [1., 1., -1.], [-2., -1., -2.]])    # wiele na nieogr (niepewne)
     # a = np.array([[0., 1., 1.], [-5., -2., -1.], [-5., -1., -2.], [-4., -1., -1.]])  # wiele na ogr
-    # a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
+    a = np.array([[0., 0., 1.], [-5., -1., -2.], [-2., 0., -1.]])  # wiele na nieogr
     # a = np.array([[0., 5., 0., 21.], [-2., -1., 1., -6.], [-1., -1., -1., -2.]])  # Jedno rozwiązanie dla 3 wymiarów
     # a = np.array([[1., 2., 3., 4., 5., 6.], [-1., -2., -3., -4., -5., -6.], [-4., -3., -2., -1., 1., 5.]])
     print(a)

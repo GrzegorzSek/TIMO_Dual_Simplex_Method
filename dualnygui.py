@@ -636,13 +636,19 @@ class Ui_MainWindow(object):
                 else:
                     self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                    which_solution = 3
+                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
             else:
                 unlimited_task = self.is_on_unlimited_task(a, rows, cols)
                 if unlimited_task:
                     self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
+                    which_solution = 4
+                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
                 else:
                     self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                     self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                    which_solution = 3
+                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
 
         else:
             self.textBrowser.append('Rozwiązanie nie jest dualnie dopuszczalne')
@@ -706,7 +712,67 @@ class Ui_MainWindow(object):
 
             y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
             plt.plot(x, y, 'k-')
+        elif which_solution == 4:      # zadanie nieograniczone
+            for i in range(1, rows):    # rysowanie ograniczen
+                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                print(matrix_to_plot[i, 1])
+                print(matrix_to_plot[i, 0])
+                print(matrix_to_plot[i, 2])
+                plt.plot(x, y)
+                if -matrix_to_plot[i, 2] > 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.max(y), alpha=0.2)
+                elif -matrix_to_plot[i, 2] < 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, y, -100, alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.min(y), alpha=0.2)
 
+            y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+            plt.plot(x, y, 'k-')
+        elif which_solution == 3:   # jedno rozwiązanie
+            support = args[0]
+            goal = args[1]
+            print(support)
+            print(goal)
+            x_1 = 0  #współrzędne x1 i x2
+            x_2 = 0
+            for j in range(0, cols):    # pobranie wartości x1, x2 (jesli jest) z kolumny
+                if goal[j] == 1:
+                    x_1 = a[0, j]
+                if goal[j] == 2:
+                    x_2 = a[0, j]
+
+            for i in range(1, rows):    # pobranie wartości x1, x2 (jesli jest) z wiersza
+                if support[i] == 1:
+                    x_1 = a[i, 0]
+                if support[i] == 2:
+                    x_2 = a[i, 0]
+            print('x1:', x_1)
+            print('x1:', x_2)
+            plt.plot(x_1, x_2, 'ro')    # rysowanie punktu rozwiązania
+
+            for i in range(1, rows):    # rysowanie ograniczen
+                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                print(matrix_to_plot[i, 1])
+                print(matrix_to_plot[i, 0])
+                print(matrix_to_plot[i, 2])
+                plt.plot(x, y)
+                if -matrix_to_plot[i, 2] > 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.max(y), alpha=0.2)
+                elif -matrix_to_plot[i, 2] < 0:
+                    if matrix_to_plot[i, 1] == 0:
+                        plt.fill_between(x, y, -100, alpha=0.2)
+                    else:
+                        plt.fill_between(x, y, np.min(y), alpha=0.2)
+
+            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+            plt.plot(x, y, 'k-')
         plt.show()
 
     def print_unbounded_solution(self, a, a_support, a_goal):
