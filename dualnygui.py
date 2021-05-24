@@ -522,8 +522,12 @@ class Ui_MainWindow(object):
             self.textBrowser.append(' ')
             is_b = self.is_optimal(rows, a)
 
+            is_empty = False
             while not is_b:
                 self.textBrowser.append('KROK: ' + str(step_counter))
+                if step_counter == 20:
+                    is_empty = True
+                    break
                 # self.textBrowser.append('Rozwiązanie jest nieoptymalne')
                 row_of_variable_removed_from_base = self.variable_to_remove(rows, a)  # wiersz zmiennej do usunięcia
                 col_of_variable_added_to_base = self.variable_to_add(cols, a, row_of_variable_removed_from_base)
@@ -592,64 +596,66 @@ class Ui_MainWindow(object):
             # print(ans1)
             # print()
 
-            i_s_c = self.inf_solutions_condition(a, cols)
-            if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań
-                on_limited_set = self.is_on_limited_set(a, rows, cols)
-                on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
-                if on_limited_set != 0:
-                    which_solution = 1
-                    # print('A_DICT: ')
-                    # print(a_dict)
-                    bounded_solution[0, 0] = a_dict[1]
-                    bounded_solution[0, 1] = a_dict[2]
-                    for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
-                        self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
-                        self.textBrowser.append(' ')
+            if is_empty == False:
+                i_s_c = self.inf_solutions_condition(a, cols)
+                if i_s_c:  # Zadanie spełnia warunki na nieskończenie wiele rozwiązań
+                    on_limited_set = self.is_on_limited_set(a, rows, cols)
+                    on_unlimited_set = self.is_on_unlimited_set(a, rows, cols)
+                    if on_limited_set != 0:
+                        which_solution = 1
+                        # print('A_DICT: ')
+                        # print(a_dict)
+                        bounded_solution[0, 0] = a_dict[1]
+                        bounded_solution[0, 1] = a_dict[2]
+                        for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
+                            self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
+                            self.textBrowser.append(' ')
 
-                        col_no = self.col_to_opt(a, cols)
-                        row_no = self.row_to_simplex(a, rows, col_no)
-                        a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
-                        self.swap_x(a_goal, a_support, row_no, col_no)
+                            col_no = self.col_to_opt(a, cols)
+                            row_no = self.row_to_simplex(a, rows, col_no)
+                            a = self.gaussian_elimination(a, row_no, col_no, rows, cols)
+                            self.swap_x(a_goal, a_support, row_no, col_no)
 
-                        # print(a)
-                        # print("wynik jako dictionary")
-                        self.answer_dict(a, a_goal, a_support, a_dict2)
-                        # print(a_dict2)
+                            # print(a)
+                            # print("wynik jako dictionary")
+                            self.answer_dict(a, a_goal, a_support, a_dict2)
+                            # print(a_dict2)
 
-                        # print("wynik jako wektor")
-                        ans2 = []
-                        self.answer_array(a_dict2, ans2)
-                        # print(ans2)
-                        # print()
+                            # print("wynik jako wektor")
+                            ans2 = []
+                            self.answer_array(a_dict2, ans2)
+                            # print(ans2)
+                            # print()
 
-                        bounded_solution[d, 0] = a_dict2[1]
-                        bounded_solution[d, 1] = a_dict2[2]
-                    self.print_bounded_solution(bounded_solution)
-                    self.textBrowser.append(" ")
-                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
-                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, bounded_solution)
-                elif on_unlimited_set != 0:
-                    which_solution = 2
-                    # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
-                    self.print_unbounded_solution(a, a_support, a_goal)
-                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                            bounded_solution[d, 0] = a_dict2[1]
+                            bounded_solution[d, 1] = a_dict2[2]
+                        self.print_bounded_solution(bounded_solution)
+                        self.textBrowser.append(" ")
+                        self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, bounded_solution)
+                    elif on_unlimited_set != 0:
+                        which_solution = 2
+                        # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
+                        self.print_unbounded_solution(a, a_support, a_goal)
+                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                    else:
+                        self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
+                        self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                        which_solution = 3
+                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
                 else:
-                    self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
-                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
-                    which_solution = 3
-                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                    unlimited_task = self.is_on_unlimited_task(a, rows, cols)
+                    if unlimited_task:
+                        self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
+                        which_solution = 4
+                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                    else:
+                        self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
+                        self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
+                        which_solution = 3
+                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
             else:
-                unlimited_task = self.is_on_unlimited_task(a, rows, cols)
-                if unlimited_task:
-                    self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
-                    which_solution = 4
-                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
-                else:
-                    self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
-                    self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
-                    which_solution = 3
-                    self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
-
+                self.textBrowser.append('Brak rozwiązań!')
         else:
             self.textBrowser.append('tablica nie jest dualnie dopuszczalna')
 
@@ -661,17 +667,69 @@ class Ui_MainWindow(object):
 
         if which_solution == 1:     # wiele na ograniczonym
             for ar in args:  # bounded_solution
-                b_s = ar
-            for i in range(1, rows):
-                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                plt.plot(x, y)
-                if -matrix_to_plot[i, 2] > 0:
-                    plt.fill_between(x, y, np.max(y), alpha=0.2)
-                elif -matrix_to_plot[i, 2] < 0:
-                    plt.fill_between(x, y, np.min(y), alpha=0.2)
+                b_s = ar    # b_s jako bounded solution
+
+            for i in range(1, rows):    # rysowanie ograniczen
+                if matrix_to_plot[i, 2] == 0:
+                    if -matrix_to_plot[i, 1] < 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
+
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
+
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                    if -matrix_to_plot[i, 1] > 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+
+                else:
+                    y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                    plt.plot(x, y)
+                    if -matrix_to_plot[i, 2] > 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                    elif -matrix_to_plot[i, 2] < 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, y, -100, alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+
             plt.plot([b_s[0][0], b_s[1][0]], [b_s[0][1], b_s[1][1]], 'k-')  # rysowanie odcinka
-            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-            plt.plot(x, y, 'ro')
+
+            if matrix_to_plot[0, 2] != 0:
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                plt.plot(x, y, 'k-')
+            else:
+                a2 = -x
+                x[:] = -a[0, 0] / matrix_to_plot[0, 1]
+                plt.plot(x, a2)
+            # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 2:   # wiele na nieogr
             support = args[0]
             goal = args[1]
@@ -694,38 +752,125 @@ class Ui_MainWindow(object):
             plt.plot(x_1, x_2, 'ro')    # rysowanie punktu półprostej
 
             for i in range(1, rows):    # rysowanie ograniczen
-                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                plt.plot(x, y)
-                if -matrix_to_plot[i, 2] > 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.max(y), alpha=0.2)
-                elif -matrix_to_plot[i, 2] < 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, y, -100, alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.min(y), alpha=0.2)
+                if matrix_to_plot[i, 2] == 0:
+                    if -matrix_to_plot[i, 1] < 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
 
-            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-            plt.plot(x, y, 'k-')
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
+
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                    if -matrix_to_plot[i, 1] > 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+
+                else:
+                    y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                    plt.plot(x, y)
+                    if -matrix_to_plot[i, 2] > 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                    elif -matrix_to_plot[i, 2] < 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, y, -100, alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+
+            if matrix_to_plot[0, 2] != 0:
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                plt.plot(x, y, 'k-')
+            else:
+                a2 = -x
+                x[:] = -a[0, 0] / matrix_to_plot[0, 1]
+                plt.plot(x, a2)
+            # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 4:      # zadanie nieograniczone
             for i in range(1, rows):    # rysowanie ograniczen
-                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                plt.plot(x, y)
-                if -matrix_to_plot[i, 2] > 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.max(y), alpha=0.2)
-                elif -matrix_to_plot[i, 2] < 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, y, -100, alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.min(y), alpha=0.2)
+                if matrix_to_plot[i, 2] == 0:
+                    if -matrix_to_plot[i, 1] < 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
 
-            y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-            plt.plot(x, y, 'k-')
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
+
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                    if -matrix_to_plot[i, 1] > 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+
+                else:
+                    y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                    plt.plot(x, y)
+                    if -matrix_to_plot[i, 2] > 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                    elif -matrix_to_plot[i, 2] < 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, y, -100, alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+
+            if matrix_to_plot[0, 2] != 0:
+                y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                plt.plot(x, y, 'k-')
+            else:
+                a2 = -x
+                x[:] = -a[0, 0] / matrix_to_plot[0, 1]
+                plt.plot(x, a2)
+
+            # y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 3:   # jedno rozwiązanie
             support = args[0]
             goal = args[1]
@@ -749,24 +894,64 @@ class Ui_MainWindow(object):
             plt.plot(x_1, x_2, 'ro')    # rysowanie punktu rozwiązania
 
             for i in range(1, rows):    # rysowanie ograniczen
-                y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                print(matrix_to_plot[i, 1])
-                print(matrix_to_plot[i, 0])
-                print(matrix_to_plot[i, 2])
-                plt.plot(x, y)
-                if -matrix_to_plot[i, 2] > 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, 100, np.max(y), alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.max(y), alpha=0.2)
-                elif -matrix_to_plot[i, 2] < 0:
-                    if matrix_to_plot[i, 1] == 0:
-                        plt.fill_between(x, y, -100, alpha=0.2)
-                    else:
-                        plt.fill_between(x, y, np.min(y), alpha=0.2)
+                if matrix_to_plot[i, 2] == 0:
+                    if -matrix_to_plot[i, 1] < 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
 
-            y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-            plt.plot(x, y, 'k-')
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.plot(x_values, a1)
+
+                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -100, alpha=0.5)
+                    if -matrix_to_plot[i, 1] > 0:
+                        if -matrix_to_plot[i, 0] < 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+                        if -matrix_to_plot[i, 0] > 0:
+                            x_values = np.arange(-10, 10, 0.1)
+                            a1 = -x
+                            x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.plot(x_values, a1)
+
+                            b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
+                            plt.axvspan(b, 100, alpha=0.5)
+
+                else:
+                    y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
+                    plt.plot(x, y)
+                    if -matrix_to_plot[i, 2] > 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                    elif -matrix_to_plot[i, 2] < 0:
+                        if matrix_to_plot[i, 1] == 0:
+                            plt.fill_between(x, y, -100, alpha=0.2)
+                        else:
+                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+
+            if matrix_to_plot[0, 2] != 0:
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                plt.plot(x, y, 'k-')
+            else:
+                a2 = -x
+                x[:] = -a[0, 0] / matrix_to_plot[0, 1]
+                plt.plot(x, a2)
+
         plt.show()
 
     def print_unbounded_solution(self, a, a_support, a_goal):
