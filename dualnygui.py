@@ -25,6 +25,17 @@ class Ui_MainWindow(object):
     iloscOgr = 0
     macierz = []
 
+    # zmienne globalne do rysowania
+    a_global = np.array([])
+    mtp_global = np.array([])
+    cols_global = 0
+    rows_global = 0
+    wsol_global = 0
+    asup_global = []
+    agoal_global = []
+    boundedsol_global = np.array([])
+    is_bounded = False
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         # MainWindow.resize(800, 600)
@@ -312,9 +323,11 @@ class Ui_MainWindow(object):
         self.line_4.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_4.setObjectName("line_4")
+
         self.buttonDraw = QtWidgets.QPushButton(self.centralwidget)
         self.buttonDraw.setGeometry(QtCore.QRect(10, 212, 75, 31))
         self.buttonDraw.setObjectName("buttonDraw")
+        self.buttonDraw.setEnabled(False)
 
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QtCore.QRect(390, 51, 391, 201))
@@ -351,6 +364,9 @@ class Ui_MainWindow(object):
 
         # na guzik reset
         self.resetButton.clicked.connect(self.resetOkna)
+
+        # na guzik rysuj
+        self.buttonDraw.clicked.connect(self.rysujWykres)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -436,6 +452,18 @@ class Ui_MainWindow(object):
         self.comboZmienne.setCurrentIndex(0)
         self.iloscZm = 0
         self.iloscOgr = 0
+        self.buttonDraw.setEnabled(False)
+        self.buttonStart.setEnabled(True)
+
+        self.a_global = np.array([])
+        self.mtp_global = np.array([])
+        self.cols_global = 0
+        self.rows_global = 0
+        self.wsol_global = 0
+        self.boundedsol_global = np.array([])
+        self.asup_global = []
+        self.agoal_global = []
+        self.is_bounded = False
 
         for element in self.aktywneZm:
             element.clear()
@@ -446,10 +474,22 @@ class Ui_MainWindow(object):
                 column.clear()
                 column.setEnabled(False)
 
+    def rysujWykres(self):
+        if self.is_bounded:
+            self.plot_graph(self.a_global, self.mtp_global, self.cols_global, self.rows_global, self.wsol_global,
+                            self.boundedsol_global)
+        else:
+            self.plot_graph(self.a_global, self.mtp_global, self.cols_global, self.rows_global, self.wsol_global,
+                            self.asup_global, self.agoal_global)
+
     def algorytmDualnySimplex(self):
 
         iloscCelu = int(self.iloscZm)
         iloscOgraniczen = int(self.iloscOgr)
+        self.buttonStart.setEnabled(False)
+
+        if self.iloscZm == 2:
+            self.buttonDraw.setEnabled(True)
 
         tempZmienne = [0]
         tempOgraniczenia = [[0, 0, 0, 0, 0, 0],
@@ -485,7 +525,7 @@ class Ui_MainWindow(object):
 
         kopiamacierzy = deepcopy(self.macierz)
         a = np.array(kopiamacierzy)
-        matrix_to_plot = deepcopy(a)    # kopia surowych danych z interfejsu (potrzebne do plotowania ogr.)
+        matrix_to_plot = deepcopy(a)  # kopia surowych danych z interfejsu (potrzebne do plotowania ogr.)
         a_dict = {}
         a_dict2 = {}
         a_dict3 = {}
@@ -511,14 +551,14 @@ class Ui_MainWindow(object):
         self.textBrowser.append("Tablica: ")
         self.print_solution(a, rows, cols, a_goal, a_support)
         self.textBrowser.append(' ')
-        self.textBrowser.append('=============================================')
+        self.textBrowser.append('========================================')
         self.textBrowser.append(' ')
 
         if is_a:
             # print('Rozwiązanie jest dualnie dopuszcalne')
             self.textBrowser.append('Tablica jest dualnie dopuszczalna')
             self.textBrowser.append(' ')
-            self.textBrowser.append('=============================================')
+            self.textBrowser.append('========================================')
             self.textBrowser.append(' ')
             is_b = self.is_optimal(rows, a)
 
@@ -550,7 +590,7 @@ class Ui_MainWindow(object):
                 # print(a_support)
                 self.print_solution(a, rows, cols, a_goal, a_support)
                 self.textBrowser.append(' ')
-                self.textBrowser.append('=============================================')
+                self.textBrowser.append('========================================')
                 self.textBrowser.append(' ')
 
                 # print("tabele pomocnicze")
@@ -574,7 +614,7 @@ class Ui_MainWindow(object):
             self.textBrowser.append('WYNIK ALGORYTMU: ')
             self.print_solution(a, rows, cols, a_goal, a_support)
             self.textBrowser.append(' ')
-            self.textBrowser.append('=============================================')
+            self.textBrowser.append('========================================')
             self.textBrowser.append(' ')
             # print(a)
             # print()
@@ -608,7 +648,8 @@ class Ui_MainWindow(object):
                         bounded_solution[0, 0] = a_dict[1]
                         bounded_solution[0, 1] = a_dict[2]
                         for d in range(1, dim):  # pętla, bo musi przeliczyć tyle razy ile ma wymiar zadania
-                            self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
+                            self.textBrowser.append(
+                                'Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
                             self.textBrowser.append(' ')
 
                             col_no = self.col_to_opt(a, cols)
@@ -632,28 +673,72 @@ class Ui_MainWindow(object):
                         self.print_bounded_solution(bounded_solution)
                         self.textBrowser.append(" ")
                         self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
-                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, bounded_solution)
+                        # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, bounded_solution)
+                        self.a_global = deepcopy(a)
+                        self.mtp_global = deepcopy(matrix_to_plot)
+                        self.cols_global = deepcopy(cols)
+                        self.rows_global = deepcopy(rows)
+                        self.wsol_global = deepcopy(which_solution)
+                        self.boundedsol_global = deepcopy(bounded_solution)
+                        self.is_bounded = True
+
                     elif on_unlimited_set != 0:
                         which_solution = 2
                         # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
                         self.print_unbounded_solution(a, a_support, a_goal)
-                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        self.a_global = deepcopy(a)
+                        self.mtp_global = deepcopy(matrix_to_plot)
+                        self.cols_global = deepcopy(cols)
+                        self.rows_global = deepcopy(rows)
+                        self.wsol_global = deepcopy(which_solution)
+                        self.boundedsol_global = deepcopy(bounded_solution)
+                        self.asup_global = deepcopy(a_support)
+                        self.agoal_global = deepcopy(a_goal)
+                        self.is_bounded = False
                     else:
                         self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                         self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
                         which_solution = 3
-                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        self.a_global = deepcopy(a)
+                        self.mtp_global = deepcopy(matrix_to_plot)
+                        self.cols_global = deepcopy(cols)
+                        self.rows_global = deepcopy(rows)
+                        self.wsol_global = deepcopy(which_solution)
+                        self.boundedsol_global = deepcopy(bounded_solution)
+                        self.asup_global = deepcopy(a_support)
+                        self.agoal_global = deepcopy(a_goal)
+                        self.is_bounded = False
                 else:
                     unlimited_task = self.is_on_unlimited_task(a, rows, cols)
                     if unlimited_task:
                         self.textBrowser.append('Zadanie nieograniczone - brak rozwiązań')
                         which_solution = 4
-                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        self.a_global = deepcopy(a)
+                        self.mtp_global = deepcopy(matrix_to_plot)
+                        self.cols_global = deepcopy(cols)
+                        self.rows_global = deepcopy(rows)
+                        self.wsol_global = deepcopy(which_solution)
+                        self.boundedsol_global = deepcopy(bounded_solution)
+                        self.asup_global = deepcopy(a_support)
+                        self.agoal_global = deepcopy(a_goal)
+                        self.is_bounded = False
                     else:
                         self.textBrowser.append('Zadanie posiada tylko jedno rozwiązanie')
                         self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
                         which_solution = 3
-                        self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                        self.a_global = deepcopy(a)
+                        self.mtp_global = deepcopy(matrix_to_plot)
+                        self.cols_global = deepcopy(cols)
+                        self.rows_global = deepcopy(rows)
+                        self.wsol_global = deepcopy(which_solution)
+                        self.boundedsol_global = deepcopy(bounded_solution)
+                        self.asup_global = deepcopy(a_support)
+                        self.agoal_global = deepcopy(a_goal)
+                        self.is_bounded = False
             else:
                 self.textBrowser.append('Brak rozwiązań!')
         else:
@@ -665,11 +750,11 @@ class Ui_MainWindow(object):
         plt.ylim(-5, 10)
         plt.xlim(-5, 10)
 
-        if which_solution == 1:     # wiele na ograniczonym
+        if which_solution == 1:  # wiele na ograniczonym
             for ar in args:  # bounded_solution
-                b_s = ar    # b_s jako bounded solution
+                b_s = ar  # b_s jako bounded solution
 
-            for i in range(1, rows):    # rysowanie ograniczen
+            for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
@@ -723,35 +808,35 @@ class Ui_MainWindow(object):
             plt.plot([b_s[0][0], b_s[1][0]], [b_s[0][1], b_s[1][1]], 'k-')  # rysowanie odcinka
 
             if matrix_to_plot[0, 2] != 0:
-                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
                 plt.plot(x, y, 'k-')
             else:
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-        elif which_solution == 2:   # wiele na nieogr
+        elif which_solution == 2:  # wiele na nieogr
             support = args[0]
             goal = args[1]
             print(support)
             print(goal)
-            x_1 = 0  #współrzędne x1 i x2
+            x_1 = 0  # współrzędne x1 i x2
             x_2 = 0
-            for j in range(0, cols):    # pobranie wartości x1, x2 (jesli jest) z kolumny
+            for j in range(0, cols):  # pobranie wartości x1, x2 (jesli jest) z kolumny
                 if goal[j] == 1:
                     x_1 = a[0, j]
                 if goal[j] == 2:
                     x_2 = a[0, j]
 
-            for i in range(2, rows + 1):    # pobranie wartości x1, x2 (jesli jest) z wiersza
+            for i in range(2, rows + 1):  # pobranie wartości x1, x2 (jesli jest) z wiersza
                 if support[i] == 1:
                     x_1 = a[i - 1, 0]
                 if support[i] == 2:
                     x_2 = a[i - 1, 0]
 
-            plt.plot(x_1, x_2, 'ro')    # rysowanie punktu półprostej
+            plt.plot(x_1, x_2, 'ro')  # rysowanie punktu półprostej
 
-            for i in range(1, rows):    # rysowanie ograniczen
+            for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
@@ -803,15 +888,15 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, np.min(y), alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
-                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
                 plt.plot(x, y, 'k-')
             else:
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-        elif which_solution == 4:      # zadanie nieograniczone
-            for i in range(1, rows):    # rysowanie ograniczen
+        elif which_solution == 4:  # zadanie nieograniczone
+            for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
@@ -863,7 +948,7 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, np.min(y), alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
-                y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
                 plt.plot(x, y, 'k-')
             else:
                 a2 = -x
@@ -871,29 +956,29 @@ class Ui_MainWindow(object):
                 plt.plot(x, a2)
 
             # y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-        elif which_solution == 3:   # jedno rozwiązanie
+        elif which_solution == 3:  # jedno rozwiązanie
             support = args[0]
             goal = args[1]
             print(support)
             print(goal)
-            x_1 = 0  #współrzędne x1 i x2
+            x_1 = 0  # współrzędne x1 i x2
             x_2 = 0
-            for j in range(0, cols):    # pobranie wartości x1, x2 (jesli jest) z kolumny
+            for j in range(0, cols):  # pobranie wartości x1, x2 (jesli jest) z kolumny
                 if goal[j] == 1:
                     x_1 = a[0, j]
                 if goal[j] == 2:
                     x_2 = a[0, j]
 
-            for i in range(1, rows):    # pobranie wartości x1, x2 (jesli jest) z wiersza
+            for i in range(1, rows):  # pobranie wartości x1, x2 (jesli jest) z wiersza
                 if support[i] == 1:
                     x_1 = a[i, 0]
                 if support[i] == 2:
                     x_2 = a[i, 0]
             print('x1:', x_1)
             print('x1:', x_2)
-            plt.plot(x_1, x_2, 'ro')    # rysowanie punktu rozwiązania
+            plt.plot(x_1, x_2, 'ro')  # rysowanie punktu rozwiązania
 
-            for i in range(1, rows):    # rysowanie ograniczen
+            for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
@@ -945,7 +1030,7 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, np.min(y), alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
-                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
+                y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
                 plt.plot(x, y, 'k-')
             else:
                 a2 = -x
