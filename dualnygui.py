@@ -516,7 +516,7 @@ class Ui_MainWindow(object):
 
         if is_a:
             # print('Rozwiązanie jest dualnie dopuszcalne')
-            self.textBrowser.append('Rozwiązanie jest dualnie dopuszcalne')
+            self.textBrowser.append('Tablica jest dualnie dopuszczalna')
             self.textBrowser.append(' ')
             self.textBrowser.append('=============================================')
             self.textBrowser.append(' ')
@@ -651,7 +651,7 @@ class Ui_MainWindow(object):
                     self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
 
         else:
-            self.textBrowser.append('Rozwiązanie nie jest dualnie dopuszczalne')
+            self.textBrowser.append('tablica nie jest dualnie dopuszczalna')
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
@@ -695,9 +695,6 @@ class Ui_MainWindow(object):
 
             for i in range(1, rows):    # rysowanie ograniczen
                 y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                print(matrix_to_plot[i, 1])
-                print(matrix_to_plot[i, 0])
-                print(matrix_to_plot[i, 2])
                 plt.plot(x, y)
                 if -matrix_to_plot[i, 2] > 0:
                     if matrix_to_plot[i, 1] == 0:
@@ -715,9 +712,6 @@ class Ui_MainWindow(object):
         elif which_solution == 4:      # zadanie nieograniczone
             for i in range(1, rows):    # rysowanie ograniczen
                 y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
-                print(matrix_to_plot[i, 1])
-                print(matrix_to_plot[i, 0])
-                print(matrix_to_plot[i, 2])
                 plt.plot(x, y)
                 if -matrix_to_plot[i, 2] > 0:
                     if matrix_to_plot[i, 1] == 0:
