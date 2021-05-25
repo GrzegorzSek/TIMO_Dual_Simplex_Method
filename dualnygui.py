@@ -741,8 +741,19 @@ class Ui_MainWindow(object):
                         self.is_bounded = False
             else:
                 self.textBrowser.append('Brak rozwiązań!')
+                which_solution = 4
+                # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
+                self.a_global = deepcopy(a)
+                self.mtp_global = deepcopy(matrix_to_plot)
+                self.cols_global = deepcopy(cols)
+                self.rows_global = deepcopy(rows)
+                self.wsol_global = deepcopy(which_solution)
+                self.boundedsol_global = deepcopy(bounded_solution)
+                self.asup_global = deepcopy(a_support)
+                self.agoal_global = deepcopy(a_goal)
+                self.is_bounded = False
         else:
-            self.textBrowser.append('tablica nie jest dualnie dopuszczalna')
+            self.textBrowser.append('tablica nie jest dualnie dopuszczalna. Skorzystaj z innego algorytmu')
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
@@ -796,14 +807,14 @@ class Ui_MainWindow(object):
                     plt.plot(x, y)
                     if -matrix_to_plot[i, 2] > 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                            plt.fill_between(x, 100, 10000, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                            plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
                             plt.fill_between(x, y, -100, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
 
             plt.plot([b_s[0][0], b_s[1][0]], [b_s[0][1], b_s[1][1]], 'k-')  # rysowanie odcinka
 
@@ -878,14 +889,14 @@ class Ui_MainWindow(object):
                     plt.plot(x, y)
                     if -matrix_to_plot[i, 2] > 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                            plt.fill_between(x, 100, 10000, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                            plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
                             plt.fill_between(x, y, -100, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
                 y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
@@ -938,14 +949,14 @@ class Ui_MainWindow(object):
                     plt.plot(x, y)
                     if -matrix_to_plot[i, 2] > 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                            plt.fill_between(x, 100, 10000, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                            plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
                             plt.fill_between(x, y, -100, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
                 y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
@@ -1020,14 +1031,14 @@ class Ui_MainWindow(object):
                     plt.plot(x, y)
                     if -matrix_to_plot[i, 2] > 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, 100, np.max(y), alpha=0.2)
+                            plt.fill_between(x, 100, 10000, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.max(y), alpha=0.2)
+                            plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
                             plt.fill_between(x, y, -100, alpha=0.2)
                         else:
-                            plt.fill_between(x, y, np.min(y), alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
 
             if matrix_to_plot[0, 2] != 0:
                 y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]  # rysowanie funkcji celu
