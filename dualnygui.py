@@ -465,6 +465,7 @@ class Ui_MainWindow(object):
         self.asup_global = []
         self.agoal_global = []
         self.is_bounded = False
+        self.points = []
 
         for element in self.aktywneZm:
             element.clear()
@@ -657,6 +658,8 @@ class Ui_MainWindow(object):
                             self.textBrowser.append(
                                 'Zadanie posiada nieskończenie wiele rozwiązań na zbiorze ograniczonym')
                             self.textBrowser.append(' ')
+                            self.textBrowser.append("Dodatkowy krok :" + str(d))
+                            self.textBrowser.append(' ')
 
                             col_no = self.col_to_opt(a, cols)
                             row_no = self.row_to_simplex(a, rows, col_no)
@@ -680,6 +683,11 @@ class Ui_MainWindow(object):
 
                             bounded_solution[d, 0] = a_dict2[1]
                             bounded_solution[d, 1] = a_dict2[2]
+                            self.print_solution(a, rows, cols, a_goal, a_support)
+                            self.textBrowser.append(" ")
+                            self.textBrowser.append('========================================')
+                            self.textBrowser.append(' ')
+
                         self.print_bounded_solution(bounded_solution)
                         self.textBrowser.append(" ")
                         self.textBrowser.append("min x0 = " + str(-1 * a[0, 0]))
@@ -764,6 +772,7 @@ class Ui_MainWindow(object):
                 self.is_bounded = False
         else:
             self.textBrowser.append('tablica nie jest dualnie dopuszczalna. Skorzystaj z innego algorytmu')
+            self.buttonDraw.setEnabled(False)
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
