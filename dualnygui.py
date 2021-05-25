@@ -1,6 +1,8 @@
+import numpy
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QVariant
 import sys
+import math
 from copy import deepcopy
 import numpy as np
 from prettytable import PrettyTable
@@ -551,7 +553,8 @@ class Ui_MainWindow(object):
         is_a = self.is_acceptable(cols, a)
 
         self.textBrowser.append("Tablica: ")
-        self.print_solution(a, rows, cols, a_goal, a_support)
+        b_round = numpy.around(a, 2)
+        self.print_solution(b_round, rows, cols, a_goal, a_support)
         self.textBrowser.append(' ')
         self.textBrowser.append('========================================')
         self.textBrowser.append(' ')
@@ -594,7 +597,8 @@ class Ui_MainWindow(object):
                 # print(a_goal)
                 # print('support')
                 # print(a_support)
-                self.print_solution(a, rows, cols, a_goal, a_support)
+                e_round = numpy.around(a, 2)
+                self.print_solution(e_round, rows, cols, a_goal, a_support)
                 self.textBrowser.append(' ')
                 self.textBrowser.append('========================================')
                 self.textBrowser.append(' ')
@@ -619,7 +623,8 @@ class Ui_MainWindow(object):
             print(self.points)
             # print("macierz wyników")
             self.textBrowser.append('WYNIK ALGORYTMU: ')
-            self.print_solution(a, rows, cols, a_goal, a_support)
+            c_round = numpy.around(a, 2)
+            self.print_solution(c_round, rows, cols, a_goal, a_support)
             self.textBrowser.append(' ')
             self.textBrowser.append('========================================')
             self.textBrowser.append(' ')
@@ -683,7 +688,8 @@ class Ui_MainWindow(object):
 
                             bounded_solution[d, 0] = a_dict2[1]
                             bounded_solution[d, 1] = a_dict2[2]
-                            self.print_solution(a, rows, cols, a_goal, a_support)
+                            d_round = numpy.around(a, 2)
+                            self.print_solution(d_round, rows, cols, a_goal, a_support)
                             self.textBrowser.append(" ")
                             self.textBrowser.append('========================================')
                             self.textBrowser.append(' ')
