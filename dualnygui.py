@@ -1100,6 +1100,8 @@ class Ui_MainWindow(object):
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
         plt.grid(linestyle='--', linewidth=0.5)
+        plt.xlabel("x1")
+        plt.ylabel("x2")
         plt.show()
 
     def print_unbounded_solution(self, a, a_support, a_goal):
@@ -1145,15 +1147,18 @@ class Ui_MainWindow(object):
         dim = bounded_solution.shape[0]
         # print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
         lambdy_str = ""
+        wynik_str = "x = "
         for d in range(0, dim):
             if d < dim - 1:
                 # print(bounded_solution[d], end="")
                 # print('*\u03BB' + str(d + 1) + ' + ', end="")
-                self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1) + ' + ')
+                # self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1) + ' + ')
+                wynik_str += str(bounded_solution[d]) + '*\u03BB' + str(d + 1) + " + "
             else:
                 # print(bounded_solution[d], end="")
                 # print('*\u03BB' + str(d + 1))
-                self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1))
+                # self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1))
+                wynik_str += str(bounded_solution[d]) + '*\u03BB' + str(d + 1)
 
         for d in range(0, dim):
             if d < dim - 1:
@@ -1162,6 +1167,9 @@ class Ui_MainWindow(object):
                 lambdy_str += '\u03BB' + str(d+1)
 
         lambdy_str += " = 1"
+
+        self.textBrowser.append("")
+        self.textBrowser.append(wynik_str)
         self.textBrowser.append("")
         self.textBrowser.append(lambdy_str)
         self.textBrowser.append("")
