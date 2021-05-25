@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
     agoal_global = []
     boundedsol_global = np.array([])
     is_bounded = False
-    points = []     # punkty z kolejnych iteracji
+    points = []  # punkty z kolejnych iteracji
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -525,7 +525,7 @@ class Ui_MainWindow(object):
 
         self.macierz.insert(0, tempZmienne)
 
-        print(self.macierz)
+        # print(self.macierz)
 
         kopiamacierzy = deepcopy(self.macierz)
         a = np.array(kopiamacierzy)
@@ -620,7 +620,7 @@ class Ui_MainWindow(object):
                 # print(ans3)
                 # print()
 
-            print(self.points)
+            # print(self.points)
             # print("macierz wyników")
             self.textBrowser.append('WYNIK ALGORYTMU: ')
             c_round = numpy.around(a, 2)
@@ -782,9 +782,9 @@ class Ui_MainWindow(object):
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
-        x = np.arange(-10, 10, 0.1)
-        plt.ylim(-5, 10)
-        plt.xlim(-5, 10)
+        x = np.arange(-100, 100, 0.1)
+        # plt.ylim(-5, 10)
+        # plt.xlim(-5, 10)
 
         if which_solution == 1:  # wiele na ograniczonym
             for p in range(0, len(self.points)):
@@ -795,11 +795,15 @@ class Ui_MainWindow(object):
             for ar in args:  # bounded_solution
                 b_s = ar  # b_s jako bounded solution
 
+            # ograniczenia zakresu wykresu
+            plt.xlim(self.points[-1][0] - 5, self.points[-1][0] + 5)
+            plt.ylim(self.points[-1][1] - 5, self.points[-1][1] + 5)
+
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -807,7 +811,7 @@ class Ui_MainWindow(object):
                             b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.axvspan(b, -100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -816,7 +820,7 @@ class Ui_MainWindow(object):
                             plt.axvspan(b, -100, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -824,7 +828,7 @@ class Ui_MainWindow(object):
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.axvspan(b, 100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -862,8 +866,8 @@ class Ui_MainWindow(object):
                     plt.plot(self.points[p][0], self.points[p][1], 'bo')
             support = args[0]
             goal = args[1]
-            print(support)
-            print(goal)
+            # print(support)
+            # print(goal)
             x_1 = 0  # współrzędne x1 i x2
             x_2 = 0
             for j in range(0, cols):  # pobranie wartości x1, x2 (jesli jest) z kolumny
@@ -880,11 +884,15 @@ class Ui_MainWindow(object):
 
             plt.plot(x_1, x_2, 'ro')  # rysowanie punktu półprostej
 
+            # ograniczenia zakresu wykresu
+            plt.ylim(x_2-5, x_2+5)
+            plt.xlim(x_1-5, x_1+5)
+
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -892,7 +900,7 @@ class Ui_MainWindow(object):
                             b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.axvspan(b, -100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -901,7 +909,7 @@ class Ui_MainWindow(object):
                             plt.axvspan(b, -100, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -909,7 +917,7 @@ class Ui_MainWindow(object):
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.axvspan(b, 100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -941,12 +949,17 @@ class Ui_MainWindow(object):
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 4:  # zadanie nieograniczone / brak rozwiązań
             for p in range(0, len(self.points)):
-                    plt.plot(self.points[p][0], self.points[p][1], 'bo')
+                plt.plot(self.points[p][0], self.points[p][1], 'bo')
+
+            # ograniczenia zakresu wykresu
+            plt.xlim(self.points[-1][0]-5, self.points[-1][0]+5)
+            plt.ylim(self.points[-1][1]-5, self.points[-1][1]+5)
+
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -954,7 +967,7 @@ class Ui_MainWindow(object):
                             b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.axvspan(b, -100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -963,7 +976,7 @@ class Ui_MainWindow(object):
                             plt.axvspan(b, -100, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -971,7 +984,7 @@ class Ui_MainWindow(object):
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.axvspan(b, 100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -1005,8 +1018,8 @@ class Ui_MainWindow(object):
         elif which_solution == 3:  # jedno rozwiązanie
             support = args[0]
             goal = args[1]
-            print(support)
-            print(goal)
+            # print(support)
+            # print(goal)
             x_1 = 0  # współrzędne x1 i x2
             x_2 = 0
             for j in range(0, cols):  # pobranie wartości x1, x2 (jesli jest) z kolumny
@@ -1020,15 +1033,19 @@ class Ui_MainWindow(object):
                     x_1 = a[i, 0]
                 if support[i] == 2:
                     x_2 = a[i, 0]
-            print('x1:', x_1)
-            print('x1:', x_2)
+            # print('x1:', x_1)
+            # print('x1:', x_2)
             plt.plot(x_1, x_2, 'ro')  # rysowanie punktu rozwiązania
+
+            # ograniczenia zakresu wykresu
+            plt.ylim(x_2 - 5, x_2 + 5)
+            plt.xlim(x_1 - 5, x_1 + 5)
 
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -1036,7 +1053,7 @@ class Ui_MainWindow(object):
                             b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.axvspan(b, -100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
@@ -1045,7 +1062,7 @@ class Ui_MainWindow(object):
                             plt.axvspan(b, -100, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -1053,7 +1070,7 @@ class Ui_MainWindow(object):
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.axvspan(b, 100, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-10, 10, 0.1)
+                            x_values = np.arange(-100, 100, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
@@ -1082,7 +1099,7 @@ class Ui_MainWindow(object):
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
-
+        plt.grid(linestyle='--', linewidth=0.5)
         plt.show()
 
     def print_unbounded_solution(self, a, a_support, a_goal):
@@ -1141,7 +1158,7 @@ class Ui_MainWindow(object):
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
         col = 0
         # print('sprawdzamy ograniczone zadanie')
-        print(a)
+        # print(a)
         for j in range(1, cols):  # sprawdza czy w pierwszym wierszu występuje zero - warunek: y_0 j_0 = 0
             if a[0, j] == 0:
                 col = j
