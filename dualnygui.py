@@ -35,6 +35,7 @@ class Ui_MainWindow(object):
     agoal_global = []
     boundedsol_global = np.array([])
     is_bounded = False
+    points = []     # punkty z kolejnych iteracji
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -565,7 +566,7 @@ class Ui_MainWindow(object):
             is_empty = False
             while not is_b:
                 self.textBrowser.append('KROK: ' + str(step_counter))
-                if step_counter == 20:
+                if step_counter == 10:
                     is_empty = True
                     break
                 # self.textBrowser.append('Rozwiązanie jest nieoptymalne')
@@ -574,7 +575,11 @@ class Ui_MainWindow(object):
                 a = self.gaussian_elimination(a, row_of_variable_removed_from_base, col_of_variable_added_to_base, rows,
                                               cols)
                 self.swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
-
+                # do rysowania punktów
+                self.answer_dict(a, a_goal, a_support, a_dict3)
+                values = [a_dict3[1], a_dict3[2]]
+                self.points.append(values)
+                # do rysowania punktów
                 is_b = self.is_optimal(rows, a)
                 step_counter += 1
 
@@ -610,6 +615,7 @@ class Ui_MainWindow(object):
                 # print(ans3)
                 # print()
 
+            print(self.points)
             # print("macierz wyników")
             self.textBrowser.append('WYNIK ALGORYTMU: ')
             self.print_solution(a, rows, cols, a_goal, a_support)
@@ -660,6 +666,10 @@ class Ui_MainWindow(object):
                             # print(a)
                             # print("wynik jako dictionary")
                             self.answer_dict(a, a_goal, a_support, a_dict2)
+                            # do rysowania punktów
+                            values = [a_dict2[1], a_dict2[2]]
+                            self.points.append(values)
+                            # do rysowania punktów
                             # print(a_dict2)
 
                             # print("wynik jako wektor")
@@ -762,6 +772,11 @@ class Ui_MainWindow(object):
         plt.xlim(-5, 10)
 
         if which_solution == 1:  # wiele na ograniczonym
+            for p in range(0, len(self.points)):
+                if p >= len(self.points) - 2:
+                    plt.plot(self.points[p][0], self.points[p][1], 'ro')
+                else:
+                    plt.plot(self.points[p][0], self.points[p][1], 'bo')
             for ar in args:  # bounded_solution
                 b_s = ar  # b_s jako bounded solution
 
@@ -827,6 +842,9 @@ class Ui_MainWindow(object):
                 plt.plot(x, a2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 2:  # wiele na nieogr
+            for p in range(0, len(self.points)):
+                if p < len(self.points) - 1:
+                    plt.plot(self.points[p][0], self.points[p][1], 'bo')
             support = args[0]
             goal = args[1]
             print(support)
@@ -906,7 +924,9 @@ class Ui_MainWindow(object):
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
-        elif which_solution == 4:  # zadanie nieograniczone
+        elif which_solution == 4:  # zadanie nieograniczone / brak rozwiązań
+            for p in range(0, len(self.points)):
+                    plt.plot(self.points[p][0], self.points[p][1], 'bo')
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
