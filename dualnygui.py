@@ -1144,6 +1144,7 @@ class Ui_MainWindow(object):
     def print_bounded_solution(self, bounded_solution):
         dim = bounded_solution.shape[0]
         # print('Rozwiązanie zdania dla nieskończenie wielu rozwiązań na zbiorze ograniczonym: ')
+        lambdy_str = ""
         for d in range(0, dim):
             if d < dim - 1:
                 # print(bounded_solution[d], end="")
@@ -1153,6 +1154,17 @@ class Ui_MainWindow(object):
                 # print(bounded_solution[d], end="")
                 # print('*\u03BB' + str(d + 1))
                 self.textBrowser.append(str(bounded_solution[d]) + '*\u03BB' + str(d + 1))
+
+        for d in range(0, dim):
+            if d < dim - 1:
+                lambdy_str += '\u03BB' + str(d+1) + " + "
+            else:
+                lambdy_str += '\u03BB' + str(d+1)
+
+        lambdy_str += " = 1"
+        self.textBrowser.append("")
+        self.textBrowser.append(lambdy_str)
+        self.textBrowser.append("")
 
     def is_on_limited_set(self, a, rows,
                           cols):  # sprawdza czy zadanie posiada nieskończenie wiele rozwiązań na zb. ogr.
