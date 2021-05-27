@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
     agoal_global = []
     boundedsol_global = np.array([])
     is_bounded = False
-    points = []  # punkty z kolejnych iteracji
+    points = [[0., 0.]]  # punkty z kolejnych iteracji
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -581,7 +581,14 @@ class Ui_MainWindow(object):
                 self.swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
                 # do rysowania punktów
                 self.answer_dict(a, a_goal, a_support, a_dict3)
-                values = [a_dict3[1], a_dict3[2]]
+                if 1 in a_goal and 2 not in a_goal:
+                    values = [0, a_dict3[2]]
+                elif 1 not in a_goal and 2 in a_goal:
+                    values = [a_dict3[1], 0]
+                elif 1 in a_goal and 2 in a_goal:
+                    values = [0, 0]
+                else:
+                    values = [a_dict3[1], a_dict3[2]]
                 self.points.append(values)
                 # do rysowania punktów
                 is_b = self.is_optimal(rows, a)
@@ -787,11 +794,13 @@ class Ui_MainWindow(object):
         # plt.xlim(-5, 10)
 
         if which_solution == 1:  # wiele na ograniczonym
+            # rysowanie punktów
             for p in range(0, len(self.points)):
                 if p >= len(self.points) - 2:
                     plt.plot(self.points[p][0], self.points[p][1], 'ro')
                 else:
                     plt.plot(self.points[p][0], self.points[p][1], 'bo')
+
             for ar in args:  # bounded_solution
                 b_s = ar  # b_s jako bounded solution
 
@@ -859,6 +868,12 @@ class Ui_MainWindow(object):
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
+
+            # rysowanie linii pomięzy punktami
+            for p in range(0, len(self.points) - 1):
+                x_values = [self.points[p][0], self.points[p+1][0]]
+                y_values = [self.points[p][1], self.points[p+1][1]]
+                plt.plot(x_values, y_values, 'b:', linewidth=2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 2:  # wiele na nieogr
             for p in range(0, len(self.points)):
@@ -946,6 +961,12 @@ class Ui_MainWindow(object):
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
+
+            # rysowanie linii pomięzy punktami
+            for p in range(0, len(self.points) - 1):
+                x_values = [self.points[p][0], self.points[p + 1][0]]
+                y_values = [self.points[p][1], self.points[p + 1][1]]
+                plt.plot(x_values, y_values, 'b:', linewidth=2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 4:  # zadanie nieograniczone / brak rozwiązań
             for p in range(0, len(self.points)):
@@ -1014,6 +1035,11 @@ class Ui_MainWindow(object):
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
 
+            # rysowanie linii pomięzy punktami
+            for p in range(0, len(self.points) - 1):
+                x_values = [self.points[p][0], self.points[p + 1][0]]
+                y_values = [self.points[p][1], self.points[p + 1][1]]
+                plt.plot(x_values, y_values, 'b:', linewidth=2)
             # y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 3:  # jedno rozwiązanie
             support = args[0]
@@ -1099,6 +1125,13 @@ class Ui_MainWindow(object):
                 a2 = -x
                 x[:] = -a[0, 0] / matrix_to_plot[0, 1]
                 plt.plot(x, a2)
+
+            # rysowanie linii pomięzy punktami
+            for p in range(0, len(self.points) - 1):
+                x_values = [self.points[p][0], self.points[p + 1][0]]
+                y_values = [self.points[p][1], self.points[p + 1][1]]
+                plt.plot(x_values, y_values, 'b:', linewidth=2)
+
         plt.grid(linestyle='--', linewidth=0.5)
         plt.xlabel("x1")
         plt.ylabel("x2")
@@ -1127,7 +1160,7 @@ class Ui_MainWindow(object):
                     break
 
         self.textBrowser.append('Rozwiązanie: ')
-        self.textBrowser.append('x + ' + str(solution) + 't')
+        self.textBrowser.append('x_opt = x + ' + str(solution) + 't     t≥0')
 
     def print_solution(self, a, rows, cols, a_goal, a_support):
         s = PrettyTable(['X', str(a_goal)])
