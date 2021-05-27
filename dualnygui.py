@@ -581,14 +581,12 @@ class Ui_MainWindow(object):
                 self.swap_x(a_goal, a_support, row_of_variable_removed_from_base, col_of_variable_added_to_base)
                 # do rysowania punktów
                 self.answer_dict(a, a_goal, a_support, a_dict3)
-                if 1 in a_goal and 2 not in a_goal:
-                    values = [0, a_dict3[2]]
-                elif 1 not in a_goal and 2 in a_goal:
-                    values = [a_dict3[1], 0]
-                elif 1 in a_goal and 2 in a_goal:
-                    values = [0, 0]
-                else:
-                    values = [a_dict3[1], a_dict3[2]]
+                values = []
+                for i in range(1, self.iloscZm + 1):
+                    if i == a_goal[i]:
+                        values.append(0)
+                    else:
+                        values.append(a_dict3[i])
                 self.points.append(values)
                 # do rysowania punktów
                 is_b = self.is_optimal(rows, a)
