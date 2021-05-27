@@ -680,7 +680,12 @@ class Ui_MainWindow(object):
                             # print("wynik jako dictionary")
                             self.answer_dict(a, a_goal, a_support, a_dict2)
                             # do rysowania punktów
-                            values = [a_dict2[1], a_dict2[2]]
+                            values = []
+                            for i in range(1, self.iloscZm + 1):
+                                if i == a_goal[i]:
+                                    values.append(0)
+                                else:
+                                    values.append(a_dict2[i])
                             self.points.append(values)
                             # do rysowania punktów
                             # print(a_dict2)
