@@ -616,7 +616,7 @@ class Ui_MainWindow(object):
                 # print()
 
                 # print("wynik jako dictionary")
-                # self.answer_dict(a, a_goal, a_support, a_dict3)
+                self.answer_dict(a, a_goal, a_support, a_dict3)
                 # print(a_dict3)
 
                 # print("wynik jako wektor")
@@ -630,12 +630,9 @@ class Ui_MainWindow(object):
             self.textBrowser.append('WYNIK ALGORYTMU: ')
             c_round = numpy.around(a, 2)
             self.print_solution(c_round, rows, cols, a_goal, a_support)
-            self.textBrowser.append(' ')
-            self.textBrowser.append('========================================')
-            self.textBrowser.append(' ')
+
             # print(a)
             # print()
-
             # print("tabele pomocnicze")
             # print("f celu: ")
             # print(a_goal)
@@ -650,6 +647,9 @@ class Ui_MainWindow(object):
             # print("wynik jako wektor")
             ans1 = []
             self.answer_array(a_dict, ans1)
+            self.answerVector(a_support, a_goal, a_dict)
+            self.textBrowser.append('========================================')
+            self.textBrowser.append('')
             # print(ans1)
             # print()
 
@@ -700,6 +700,10 @@ class Ui_MainWindow(object):
                             bounded_solution[d, 1] = a_dict2[2]
                             d_round = numpy.around(a, 2)
                             self.print_solution(d_round, rows, cols, a_goal, a_support)
+                            self.textBrowser.append("")
+                            self.textBrowser.append("Dodatkowy wierzchołek")
+                            self.answerVector(a_support, a_goal, a_dict2)
+
                             self.textBrowser.append(" ")
                             self.textBrowser.append('========================================')
                             self.textBrowser.append(' ')
@@ -719,6 +723,9 @@ class Ui_MainWindow(object):
                     elif on_unlimited_set != 0:
                         which_solution = 2
                         # print('Zadanie posiada wiele rozwiązań na zbiorze nieograniczonym')
+                        self.textBrowser.append('Zadanie posiada nieskończenie wiele rozwiązań na zbiorze '
+                                                'nieograniczonym')
+                        self.textBrowser.append('')
                         self.print_unbounded_solution(a, a_support, a_goal)
                         # self.plot_graph(a, matrix_to_plot, cols, rows, which_solution, a_support, a_goal)
                         self.a_global = deepcopy(a)
@@ -789,6 +796,37 @@ class Ui_MainWindow(object):
         else:
             self.textBrowser.append('tablica nie jest dualnie dopuszczalna. Skorzystaj z innego algorytmu')
             self.buttonDraw.setEnabled(False)
+
+    def answerVector(self, a_support, a_goal, a_dict):
+        ansVector = []
+        vectorStructure = []
+        for item in a_support:
+            if item == 0:
+                continue
+            else:
+                vectorStructure.append("x"+str(item))
+        for item in a_goal:
+            if item == 0:
+                continue
+            else:
+                vectorStructure.append("x"+str(item))
+
+        amountLeft = len(a_goal)-1
+
+        for item in a_support:
+            if item == 0:
+                continue
+            else:
+                ansVector.append(a_dict[item])
+
+        for i in range(amountLeft):
+            ansVector.append(0)
+
+        ans = np.round(ansVector, 5)
+        self.textBrowser.append("")
+        self.textBrowser.append("Struktura x: " + str(vectorStructure))
+        self.textBrowser.append("x = " + str(ans))
+        self.textBrowser.append("")
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
@@ -874,8 +912,8 @@ class Ui_MainWindow(object):
 
             # rysowanie linii pomięzy punktami
             for p in range(0, len(self.points) - 1):
-                x_values = [self.points[p][0], self.points[p+1][0]]
-                y_values = [self.points[p][1], self.points[p+1][1]]
+                x_values = [self.points[p][0], self.points[p + 1][0]]
+                y_values = [self.points[p][1], self.points[p + 1][1]]
                 plt.plot(x_values, y_values, 'b:', linewidth=2)
             # y = (-matrix_to_plot[0, 1] * x + (-a[0, 0])) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 2:  # wiele na nieogr
@@ -903,8 +941,8 @@ class Ui_MainWindow(object):
             plt.plot(x_1, x_2, 'ro')  # rysowanie punktu półprostej
 
             # ograniczenia zakresu wykresu
-            plt.ylim(x_2-5, x_2+5)
-            plt.xlim(x_1-5, x_1+5)
+            plt.ylim(x_2 - 5, x_2 + 5)
+            plt.xlim(x_1 - 5, x_1 + 5)
 
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
@@ -976,8 +1014,8 @@ class Ui_MainWindow(object):
                 plt.plot(self.points[p][0], self.points[p][1], 'bo')
 
             # ograniczenia zakresu wykresu
-            plt.xlim(self.points[-1][0]-5, self.points[-1][0]+5)
-            plt.ylim(self.points[-1][1]-5, self.points[-1][1]+5)
+            plt.xlim(self.points[-1][0] - 5, self.points[-1][0] + 5)
+            plt.ylim(self.points[-1][1] - 5, self.points[-1][1] + 5)
 
             for i in range(1, rows):  # rysowanie ograniczen
                 if matrix_to_plot[i, 2] == 0:
@@ -1198,9 +1236,9 @@ class Ui_MainWindow(object):
 
         for d in range(0, dim):
             if d < dim - 1:
-                lambdy_str += '\u03BB' + str(d+1) + " + "
+                lambdy_str += '\u03BB' + str(d + 1) + " + "
             else:
-                lambdy_str += '\u03BB' + str(d+1)
+                lambdy_str += '\u03BB' + str(d + 1)
 
         lambdy_str += " = 1"
 
