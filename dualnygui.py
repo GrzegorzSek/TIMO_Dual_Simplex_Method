@@ -830,7 +830,7 @@ class Ui_MainWindow(object):
 
     def plot_graph(self, a, matrix_to_plot, cols, rows, which_solution, *args):
 
-        x = np.arange(-100, 100, 0.1)
+        x = np.arange(-1000, 1000, 0.1)
         # plt.ylim(-5, 10)
         # plt.xlim(-5, 10)
 
@@ -853,38 +853,38 @@ class Ui_MainWindow(object):
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
 
                 else:
                     y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
@@ -896,7 +896,7 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, y, -100, alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
                         else:
                             plt.fill_between(x, y, -10000, alpha=0.2)
 
@@ -948,38 +948,38 @@ class Ui_MainWindow(object):
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
 
                 else:
                     y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
@@ -1021,38 +1021,38 @@ class Ui_MainWindow(object):
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))     #TU ZMIENILEM
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))   # TU ZMIENILEM
+                            plt.axvspan(b, -10000, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
 
                 else:
                     y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
@@ -1064,7 +1064,7 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, y, -100, alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
                         else:
                             plt.fill_between(x, y, -10000, alpha=0.2)
 
@@ -1112,38 +1112,38 @@ class Ui_MainWindow(object):
                 if matrix_to_plot[i, 2] == 0:
                     if -matrix_to_plot[i, 1] < 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))     # TU ZMIENILEM
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))       # TU ZMIENILEM
+                            plt.axvspan(b, -10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
-                            x_values[:] = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            x_values[:] = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
                             plt.plot(x_values, a1)
 
-                            b = -(-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
-                            plt.axvspan(b, -100, alpha=0.5)
+                            b = (-matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1]))
+                            plt.axvspan(b, -10000, alpha=0.5)
                     if -matrix_to_plot[i, 1] > 0:
                         if -matrix_to_plot[i, 0] < 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
                         if -matrix_to_plot[i, 0] > 0:
-                            x_values = np.arange(-100, 100, 0.1)
+                            x_values = np.arange(-1000, 1000, 0.1)
                             a1 = -x
                             x_values[:] = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
                             plt.plot(x_values, a1)
 
                             b = -matrix_to_plot[i, 0] / (-matrix_to_plot[i, 1])
-                            plt.axvspan(b, 100, alpha=0.5)
+                            plt.axvspan(b, 10000, alpha=0.5)
 
                 else:
                     y = -1 * (matrix_to_plot[i, 1] * x + (-matrix_to_plot[i, 0])) / matrix_to_plot[i, 2]
@@ -1155,7 +1155,7 @@ class Ui_MainWindow(object):
                             plt.fill_between(x, y, 10000, alpha=0.2)
                     elif -matrix_to_plot[i, 2] < 0:
                         if matrix_to_plot[i, 1] == 0:
-                            plt.fill_between(x, y, -100, alpha=0.2)
+                            plt.fill_between(x, y, -10000, alpha=0.2)
                         else:
                             plt.fill_between(x, y, -10000, alpha=0.2)
 
