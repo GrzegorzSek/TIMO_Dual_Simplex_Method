@@ -570,9 +570,6 @@ class Ui_MainWindow(object):
             is_empty = False
             while not is_b:
                 self.textBrowser.append('KROK: ' + str(step_counter))
-                if step_counter == 10:
-                    is_empty = True
-                    break
                 # self.textBrowser.append('Rozwiązanie jest nieoptymalne')
                 row_of_variable_removed_from_base = self.variable_to_remove(rows, a)  # wiersz zmiennej do usunięcia
                 col_of_variable_added_to_base = self.variable_to_add(cols, a, row_of_variable_removed_from_base)
@@ -587,6 +584,9 @@ class Ui_MainWindow(object):
                         values.append(0)
                     else:
                         values.append(a_dict3[i])
+                if values in self.points:
+                    is_empty = True
+                    break
                 self.points.append(values)
                 # do rysowania punktów
                 is_b = self.is_optimal(rows, a)
@@ -794,7 +794,7 @@ class Ui_MainWindow(object):
                 self.agoal_global = deepcopy(a_goal)
                 self.is_bounded = False
         else:
-            self.textBrowser.append('tablica nie jest dualnie dopuszczalna. Skorzystaj z innego algorytmu')
+            self.textBrowser.append('Tablica nie jest dualnie dopuszczalna. Skorzystaj z innego algorytmu')
             self.buttonDraw.setEnabled(False)
 
     def answerVector(self, a_support, a_goal, a_dict):
