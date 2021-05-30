@@ -842,7 +842,7 @@ class Ui_MainWindow(object):
                 else:
                     plt.plot(self.points[p][0], self.points[p][1], 'bo')
 
-            for ar in args:  # bounded_solution
+            for ar in args:  # bounded_solutioon
                 b_s = ar  # b_s jako bounded solution
 
             # ograniczenia zakresu wykresu
