@@ -1083,6 +1083,9 @@ class Ui_MainWindow(object):
                 plt.plot(x_values, y_values, 'b:', linewidth=2)
             # y = (-matrix_to_plot[0, 1] * x + (-3)) / matrix_to_plot[0, 2]     # rysowanie funkcji celu
         elif which_solution == 3:  # jedno rozwiązanie
+            for p in range(0, len(self.points)):
+                if p < len(self.points) - 1:
+                    plt.plot(self.points[p][0], self.points[p][1], 'bo')
             support = args[0]
             goal = args[1]
             # print(support)
