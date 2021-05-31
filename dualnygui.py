@@ -467,7 +467,7 @@ class Ui_MainWindow(object):
         self.asup_global = []
         self.agoal_global = []
         self.is_bounded = False
-        self.points = []
+        self.points = [[0., 0.]]
 
         for element in self.aktywneZm:
             element.clear()
